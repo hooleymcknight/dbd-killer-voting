@@ -3,6 +3,9 @@
 ## Installation
 
 1. Download files.
+     - In the top right-hand corner of this page, click the green "Code" button. From that dropdown, click "Download zip."
+     - Pick a good place for your files where you are less likely to move them. You can move them later, but you'll have to update paths every time you move this folder (mentioned below).
+     - Unzip your files in the location that you selected.
 2. [Install node](https://nodejs.org/en).
      - Pick a place on the C: drive.
      - Do not automatically install the "necessary tools." They aren't necessary.
