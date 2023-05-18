@@ -10,10 +10,10 @@
      - Do not automatically install the "necessary tools." They aren't necessary.
      - All other settings can remain the same.
 3. Install pm2.
-     - Right-click your "install-pm2.ps1" file and "run with powershell."
-4. Edit path file for startup.cmd. ![path to edit in startup.cmd](https://github.com/hooleymcknight/chris-killers-bot/blob/main/instructions-images/startup_edit.png)
-5. Edit drive letter and path file for start-bot.ps1. ![path to edit in start-bot.ps1](https://github.com/hooleymcknight/chris-killers-bot/blob/main/instructions-images/edit_ps1.png)
-6. Create and place shortcuts for startup.cmd and stop.cmd, if desired. Right-click and click "Create shortcut."
+     - Right-click your `install-pm2.ps1` file and "run with powershell."
+4. Edit path file for `startup.cmd`. ![path to edit in startup.cmd](https://github.com/hooleymcknight/chris-killers-bot/blob/main/instructions-images/startup_edit.png)
+5. Edit drive letter and path file for `start-bot.ps1`. ![path to edit in start-bot.ps1](https://github.com/hooleymcknight/chris-killers-bot/blob/main/instructions-images/edit_ps1.png)
+6. Create and place shortcuts for `startup.cmd` and `stop.cmd`, if desired. Right-click and click "Create shortcut."
 7. In OBS, add a new Browser source. Set the URL to: https://localhost:3012, the width to 800, and the height to 744. Clear the custom CSS, and have "Refresh browser when scene becomes active" checked.
      - If you notice a gap in your killers list, you can adjust the height later to fill it. Smaller height = smaller gap. ![setup for browser source in OBS](https://github.com/hooleymcknight/chris-killers-bot/blob/main/instructions-images/obs_setup.png)
 8. Use Alt + click to crop the list to size in your scene.
@@ -29,4 +29,4 @@ These instructions will be your guide for every time you want to start up the bo
 Follow these instructions when you are done using the bot.
 1. In the blue Powershell window, type Ctrl + C.
      - You will be prompted to terminate batch job. Type "Y" and hit Enter.
-2. Double click your stop shortcut, or stop.cmd.
+2. Double click your stop shortcut, or `stop.cmd`.
