@@ -3,9 +3,12 @@
 ## Installation
 
 1. Download files.
-2. Install node.
+2. [Install node](https://nodejs.org/en).
+     - Pick a place on the C: drive.
+     - Do not automatically install the "necessary tools." They aren't necessary.
+     - All other settings can remain the same.
 3. Install pm2.
-    - Right-click your "install-pm2.ps1" file and "run with powershell."
+     - Right-click your "install-pm2.ps1" file and "run with powershell."
 4. Edit path file for startup.cmd ![path to edit in startup.cmd](https://github.com/hooleymcknight/chris-killers-bot/blob/main/instructions-images/startup_edit.png)
 5. Place your shortcut.
 6. In OBS, add a new Browser source. Set the URL to: https://localhost:3012, the width to 800, and the height to 744. Clear the custom CSS, and have "Refresh browser when scene becomes active" checked.
