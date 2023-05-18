@@ -19,13 +19,13 @@
 8. Use Alt + click to crop the list to size in your scene.
 9. Right-click the list to open Filters, and apply a vertical scroll to the list.
 
-## Run Instructions
+## How to Run the Bot
 These instructions will be your guide for every time you want to start up the bot.
 1. Double click your startup shortcut, or `startup.cmd`.
 2. Wait for the "completed successfully" display before continuing. Do not close this window. ![process running](https://github.com/hooleymcknight/chris-killers-bot/blob/main/instructions-images/page_running.png)
 3. In OBS, go to the Properties of your list and click "Refresh cache of current page." ![refresh obs source](https://github.com/hooleymcknight/chris-killers-bot/blob/main/instructions-images/obs_refresh.png)
 
-## Close Instructions
+## How to Close the Bot
 Follow these instructions when you are done using the bot.
 1. In the blue Powershell window, type Ctrl + C.
      - You will be prompted to terminate batch job. Type "Y" and hit Enter.
