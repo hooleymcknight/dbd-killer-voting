@@ -55,6 +55,7 @@ client.on('message', (channel, user, message, self) => {
         }
         // list votes
         if (message.startsWith(prefix + 'listvotes') || message.startsWith(prefix + 'list votes')) {
+            console.log('list votes request received')
             const listReply = dbd.listVotes()
             client.say(channel, listReply)
         }

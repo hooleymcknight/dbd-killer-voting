@@ -2,34 +2,36 @@ const fs = require('fs')
 const path = require('path')
 const killerNicknames = require('./killer_names.json')
 const killerBlank = require('./killers_blank.json')
+let killersVotes
 
 const store = (message, user) => {
-  let newJSON = require('./killers.json')
-  console.log(newJSON)
+  console.log('pulling new json?')
+  killersVotes = require('./killers.json')
+  console.log(killersVotes)
   let vote = message.toLowerCase().split('vote')[1].trim()
 
-  if (Object.values(newJSON).includes(user.username)) {
+  if (Object.values(killersVotes).includes(user.username)) {
     console.log('you already voted')
     return 'you already voted'
   }
   else {
     // check name
     // then do another check
-    const processedVote = checkNames(newJSON, vote)
+    const processedVote = checkNames(killersVotes, vote)
 
     if (!processedVote) {
       console.log('not a killer')
       return `@${user.username} that's not a killer... can you check the spelling? I can only handle so much`
     }
-    else if (newJSON[`${processedVote}`].length) {
+    else if (killersVotes[`${processedVote}`].length) {
       console.log('someone took it')
       return `@${user.username} someone already voted for this killer`
     }
     else {
-      newJSON[`${processedVote}`] = user.username
+      killersVotes[`${processedVote}`] = user.username
 
       console.log('before write file')
-      fs.writeFile(path.join(__dirname, '/killers.json'), JSON.stringify(newJSON), err => {
+      fs.writeFile(path.join(__dirname, '/killers.json'), JSON.stringify(killersVotes), err => {
         if (err) {
           throw err
         }
@@ -79,30 +81,36 @@ const clearReplies = [
 ]
 
 const clear = () => {
+  killersVotes = killerBlank
   fs.writeFile(path.join(__dirname, '/killers.json'), JSON.stringify(killerBlank), err => {
     if (err) {
       throw err
     }
     console.log('cleared file')
+    console.log(killersVotes)
   })
   return pickRandom(clearReplies)
 }
 
 const listVotes = () => {
-  let voteList = require('./killers.json')
-  const votes = Object.keys(voteList).filter(x => voteList[x].length)
+  console.log('list votes')
+  console.log(killersVotes)
+  const votes = Object.keys(killersVotes).filter(x => killersVotes[x].length)
+
+  console.log(votes)
 
   if (!votes.length) {
     return `there are no votes yet`
   }
   else {
-    return votes.map(x => `${x} - ${voteList[x]}`).join(', ')
+    console.log('there are votes:')
+    console.log(votes.map(x => `${x} - ${killersVotes[x]}`).join(', '))
+    return votes.map(x => `${x} - ${killersVotes[x]}`).join(', ')
   }
 }
 
 const myVote = (user) => {
-  let voteList = require('./killers.json')
-  const vote = Object.keys(voteList).filter(x => voteList[x] === user.username)
+  const vote = Object.keys(killersVotes).filter(x => killersVotes[x] === user.username)
 
   if (vote.length) {
     return `@${user.username} you voted for ${vote[0]}`
