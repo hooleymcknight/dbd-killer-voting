@@ -1,17 +1,15 @@
-const fs = require('fs')
+const fs = require('fs').promises
 const path = require('path')
 const killerNicknames = require('./killer_names.json')
-const killerBlank = require('./killers_blank.json')
-let killersVotes
 
-const store = (message, user) => {
-  console.log('pulling new json?')
-  killersVotes = require('./killers.json')
-  console.log(killersVotes)
+const killerBlank = {"Artist": "", "Blight": "", "Bubba": "", "Clown": "", "DSlinger": "", "Demigrgn": "", "Doctor": "", "Dredge": "", "Freddy": "", "Ghostface": "", "Hag": "", "Hillbilly": "", "Huntress": "", "Knight": "", "Legion": "", "Myers": "", "Nemesis": "", "Nurse": "", "Oni": "", "Pig": "", "Pinhead": "", "Plague": "", "PyrmdHead": "", "Sadako": "", "Singlrty": "", "SkullMrch": "", "Spirit": "", "Trapper": "", "Trickster": "", "Twins": "", "Wesker": "", "Wraith": ""}
+const killerTextFile = path.join(__dirname, '/killer_list.txt')
+
+const store = async (message, user) => {
   let vote = message.toLowerCase().split('vote')[1].trim()
+  let killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'))
 
   if (Object.values(killersVotes).includes(user.username)) {
-    console.log('you already voted')
     return 'you already voted'
   }
   else {
@@ -20,24 +18,14 @@ const store = (message, user) => {
     const processedVote = checkNames(killersVotes, vote)
 
     if (!processedVote) {
-      console.log('not a killer')
       return `@${user.username} that's not a killer... can you check the spelling? I can only handle so much`
     }
     else if (killersVotes[`${processedVote}`].length) {
-      console.log('someone took it')
       return `@${user.username} someone already voted for this killer`
     }
     else {
       killersVotes[`${processedVote}`] = user.username
-
-      console.log('before write file')
-      fs.writeFile(path.join(__dirname, '/killers.json'), JSON.stringify(killersVotes), err => {
-        if (err) {
-          throw err
-        }
-        console.log('updated file')
-      })
-      console.log('recorded')
+      await fs.writeFile(killerTextFile, createTxtFile(killersVotes))
       return `@${user.username} I've recorded your vote for ${vote}.`
     }
   }
@@ -50,11 +38,11 @@ const store = (message, user) => {
  * @returns vote param if not a nickname, false if not a killer at all, fixed name if accepted nickname
  */
 const checkNames = (newJSON, vote) => {
-  const officialNames = Object.keys(newJSON)
+  const officialNames = Object.keys(newJSON).map(x => x.toLowerCase())
   if (officialNames.includes(vote)) {
     // the vote matches the listed killer name
-    // return it and move on
-    return vote
+    // get the correct case, return it and move on
+    return Object.keys(newJSON)[officialNames.indexOf(vote)]
   }
   else {
     // the vote doesn't exactly match. let's see if it matches any of the nicknames
@@ -80,36 +68,24 @@ const clearReplies = [
   "videovUgly the voting board has been cleared. throw votes in for next round! videovUgly"
 ]
 
-const clear = () => {
-  killersVotes = killerBlank
-  fs.writeFile(path.join(__dirname, '/killers.json'), JSON.stringify(killerBlank), err => {
-    if (err) {
-      throw err
-    }
-    console.log('cleared file')
-    console.log(killersVotes)
-  })
+const clear = async () => {await fs.writeFile(killerTextFile, createTxtFile(killerBlank))
   return pickRandom(clearReplies)
 }
 
-const listVotes = () => {
-  console.log('list votes')
-  console.log(killersVotes)
+const listVotes = async () => {
+  const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'))
   const votes = Object.keys(killersVotes).filter(x => killersVotes[x].length)
-
-  console.log(votes)
 
   if (!votes.length) {
     return `there are no votes yet`
   }
   else {
-    console.log('there are votes:')
-    console.log(votes.map(x => `${x} - ${killersVotes[x]}`).join(', '))
     return votes.map(x => `${x} - ${killersVotes[x]}`).join(', ')
   }
 }
 
-const myVote = (user) => {
+const myVote = async (user) => {
+  const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'))
   const vote = Object.keys(killersVotes).filter(x => killersVotes[x] === user.username)
 
   if (vote.length) {
@@ -118,6 +94,25 @@ const myVote = (user) => {
   else {
     return `@${user.username} you haven't voted yet`
   }
+}
+
+const createTxtFile = (json) => {
+  let text = ''
+  const lastIdx = Object.keys(json).length - 1
+  Object.keys(json).forEach((killer) => {
+    text += `${killer} - ${json[killer]}`
+    Object.keys(json).indexOf(killer) === lastIdx ? text += '' : text += '\n'
+  })
+  return text
+}
+
+const toJSON = (txt) => {
+  let keys = txt.split('\n')
+  let JSONobject = {}
+  keys.forEach((line) => {
+    JSONobject[line.split(' - ')[0]] = line.split(' - ')[1]
+  })
+  return JSONobject
 }
 
 module.exports = { store, clear, listVotes, myVote }

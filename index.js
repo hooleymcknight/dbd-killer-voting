@@ -1,14 +1,39 @@
-// const fs = require('fs')
-// const config = require('config.json')
 const ConfigParser = require('configparser')
-const path = require('path')
 const tmi = require('tmi.js')
 
-const mod = require('./tools/mod')
-const dbd = require('./tools/voting/voting')
+const mod = require('./src/tools/mod')
+const dbd = require('./src/tools/voting/voting')
+
+const { app, BrowserWindow, ipcMain } = require('electron')
+const path = require('path')
+
+const createWindow = () => {
+    const win = new BrowserWindow({
+      width: 800,
+      height: 600,
+      icon: __dirname + '/assets/dbd-perk.png',
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+        nodeIntegration: true,
+        contextIsolation: false,
+      }
+    })
+  
+    win.loadFile('index.html')
+}
+
+app.whenReady().then(() => {
+    createWindow()
+})
+
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit()
+})
+
+// =================== bot functions
 
 const conf = new ConfigParser()
-conf.read(path.resolve(__dirname, './../../keys/config.ini'))
+conf.read(path.resolve(__dirname, './keys/config.ini'))
 
 conf.sections()
 
@@ -29,20 +54,19 @@ const client = new tmi.client({
 
 client.connect()
 
-client.on('message', (channel, user, message, self) => {
+client.on('message', async (channel, user, message, self) => {
     if (self) return
     if (!message) return
+    console.log(channel)
     if (message.charAt(0) !== prefix) return
     
     // vote
     if (message.startsWith(prefix + 'vote')) {
-        const voteReply = dbd.store(message, user)
-        console.log(voteReply)
+        const voteReply = await dbd.store(message, user)
         client.say(channel, voteReply)
     }
     else if (message.startsWith(prefix + 'myvote')) {
-        console.log('my vote')
-        const myVoteReply = dbd.myVote(user)
+        const myVoteReply = await dbd.myVote(user)
         client.say(channel, myVoteReply)
     }
     
@@ -50,17 +74,21 @@ client.on('message', (channel, user, message, self) => {
     if (mod.isMod(user)) {
         // clear votes
         if (message.startsWith(prefix + 'clear')) {
-            const clearReply = dbd.clear()
+            const clearReply = await dbd.clear()
             client.say(channel, clearReply)
         }
         // list votes
         if (message.startsWith(prefix + 'listvotes') || message.startsWith(prefix + 'list votes')) {
-            console.log('list votes request received')
-            const listReply = dbd.listVotes()
+            const listReply = await dbd.listVotes()
             client.say(channel, listReply)
         }
         // possibly announce?
 
         
     }
+})
+
+ipcMain.on('click', async () => {
+    const clearReply = await dbd.clear()
+    client.say('#videovomit', clearReply)
 })
