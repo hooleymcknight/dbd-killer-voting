@@ -3,7 +3,8 @@ const path = require('path')
 const killerNicknames = require('./killer_names.json')
 
 const killerBlank = {"Artist": "", "Blight": "", "Bubba": "", "Clown": "", "DSlinger": "", "Demigrgn": "", "Doctor": "", "Dredge": "", "Freddy": "", "Ghostface": "", "Hag": "", "Hillbilly": "", "Huntress": "", "Knight": "", "Legion": "", "Myers": "", "Nemesis": "", "Nurse": "", "Oni": "", "Pig": "", "Pinhead": "", "Plague": "", "PyrmdHead": "", "Sadako": "", "Singlrty": "", "SkullMrch": "", "Spirit": "", "Trapper": "", "Trickster": "", "Twins": "", "Wesker": "", "Wraith": ""}
-const killerTextFile = path.join(__dirname, '/killer_list.txt')
+// const killerTextFile = path.join(__dirname, '/killer_list.txt')
+const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt'
 
 const store = async (message, user) => {
   let vote = message.toLowerCase().split('vote')[1].trim()

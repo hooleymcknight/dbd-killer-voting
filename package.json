@@ -1,31 +1,31 @@
 {
   "name": "dbd-killer-voting",
+  "productName": "dbd-killer-voting",
   "version": "2.0.0",
-  "description": "People vote on killers to be present in the next round",
-  "main": "index.js",
+  "description": "My Electron application description",
+  "main": "src/index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
   },
-  "author": "hooleymcknight",
-  "license": "ISC",
+  "keywords": [],
+  "author": "Hooley",
+  "license": "MIT",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0",
+    "configparser": "0.3.10",
+    "tmi.js": "1.8.5"
+  },
   "devDependencies": {
-    "electron-builder": "^22.14.5",
     "@electron-forge/cli": "^6.2.1",
     "@electron-forge/maker-deb": "^6.2.1",
     "@electron-forge/maker-rpm": "^6.2.1",
     "@electron-forge/maker-squirrel": "^6.2.1",
     "@electron-forge/maker-zip": "^6.2.1",
     "@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
-    "electron": "^25.2.0"
-  },
-  "resolutions": {
-    "rcedit": "2.1.1"
-  },
-  "dependencies": {
-    "electron": "^16.0.4",
-    "electron-devtools-installer": "^3.2.0",
-    "electron-is-dev": "^2.0.0",
-    "electron-reload": "^2.0.0-alpha.1",
-    "tmi.js": "^1.8.5"
+    "electron": "25.2.0"
   }
 }

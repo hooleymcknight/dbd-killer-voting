@@ -1,6 +1,7 @@
 module.exports = {
   packagerConfig: {
     asar: true,
+    icon: './src/assets/dbd-perk.png',
   },
   rebuildConfig: {},
   makers: [

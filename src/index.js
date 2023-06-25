@@ -1,8 +1,8 @@
 const ConfigParser = require('configparser')
 const tmi = require('tmi.js')
 
-const mod = require('./src/tools/mod')
-const dbd = require('./src/tools/voting/voting')
+const mod = require('./tools/mod')
+const dbd = require('./tools/voting/voting')
 
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
@@ -11,6 +11,8 @@ const createWindow = () => {
     const win = new BrowserWindow({
       width: 800,
       height: 600,
+      autoHideMenuBar: true,
+      resizable: false,
       icon: __dirname + '/assets/dbd-perk.png',
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
@@ -19,7 +21,7 @@ const createWindow = () => {
       }
     })
   
-    win.loadFile('index.html')
+    win.loadFile('./src/index.html')
 }
 
 app.whenReady().then(() => {
@@ -33,7 +35,7 @@ app.on('window-all-closed', () => {
 // =================== bot functions
 
 const conf = new ConfigParser()
-conf.read(path.resolve(__dirname, './keys/config.ini'))
+conf.read(path.resolve(__dirname, '../keys/config.ini'))
 
 conf.sections()
 
@@ -57,7 +59,6 @@ client.connect()
 client.on('message', async (channel, user, message, self) => {
     if (self) return
     if (!message) return
-    console.log(channel)
     if (message.charAt(0) !== prefix) return
     
     // vote
