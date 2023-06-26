@@ -98,7 +98,7 @@ const myVote = async (user) => {
 }
 
 const help = (userIsMod) => {
-  let commandsList = '!vote (killer) - send in your vote for the next killer. !myvote - see who you voted for.'
+  let commandsList = 'Commands: !vote (killer) - send in your vote for the next killer. !myvote - see who you voted for.'
   if (userIsMod) commandsList += ' ... Mods only: !clear - clear the votes board. !listvotes - see who all voted for what.'
   return commandsList
 }

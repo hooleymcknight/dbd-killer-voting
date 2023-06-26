@@ -64,7 +64,11 @@ client.on('message', async (channel, user, message, self) => {
     if (message.charAt(0) !== prefix) return
     
     // vote
-    if (message.startsWith(prefix + 'vote') && !votingClosed) {
+    if (message.startsWith(prefix + 'vote')) {
+        if (votingClosed) {
+            client.say(channel, 'Voting is currently closed.')
+            return
+        }
         const voteReply = await dbd.store(message, user)
         client.say(channel, voteReply)
     }

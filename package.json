@@ -1,7 +1,7 @@
 {
   "name": "dbd-killer-voting",
   "productName": "dbd-killer-voting",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "My Electron application description",
   "main": "src/index.js",
   "scripts": {

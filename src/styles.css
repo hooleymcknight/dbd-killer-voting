@@ -61,6 +61,7 @@ body button {
     background: #D61727;
     cursor: pointer;
     transition: all 0.2s ease;
+    margin-bottom: 20px;
 }
 
 body button:hover {
