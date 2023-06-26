@@ -9,3 +9,8 @@ I built a Windows app containing a Twitch chat bot that fields viewers' votes on
 The Windows desktop app displays a button labeled "Clear Votes" which will automatically clear all votes and reset the text file when clicked. VV can click this once between rounds to reset the votes, and that's all he has to do. As an additional option, he or an accepted channel moderator may type ``!clear`` into the Twitch chat for the same effect.
 
 ![display of the Windows app for DBD Killer Voting](https://hooleymcknight.com/images/projects/dbd-killer-votes-app.png)
+
+## Planned Updates
+
+ - add a !help command or list of commands in the Windows app
+ - add a "close voting" button and lock votes until re-opened
