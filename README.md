@@ -10,7 +10,7 @@ The Windows desktop app displays a button labeled "Clear Votes" which will autom
 
 ![display of the Windows app for DBD Killer Voting](https://hooleymcknight.com/images/projects/dbd-killer-votes-app.png)
 
-## Planned Updates
+## Newest Updates
 
  - add a !help command or list of commands in the Windows app
  - add a "close voting" button and lock votes until re-opened

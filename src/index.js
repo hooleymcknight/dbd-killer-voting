@@ -41,6 +41,8 @@ conf.sections()
 
 const prefix = '!'
 
+let votingClosed = false
+
 const client = new tmi.client({
     options: { debug: false },
     connection: {
@@ -62,13 +64,17 @@ client.on('message', async (channel, user, message, self) => {
     if (message.charAt(0) !== prefix) return
     
     // vote
-    if (message.startsWith(prefix + 'vote')) {
+    if (message.startsWith(prefix + 'vote') && !votingClosed) {
         const voteReply = await dbd.store(message, user)
         client.say(channel, voteReply)
     }
-    else if (message.startsWith(prefix + 'myvote')) {
+    else if (message.startsWith(prefix + 'myvote')) { // who did I vote for
         const myVoteReply = await dbd.myVote(user)
         client.say(channel, myVoteReply)
+    }
+    else if (message.startsWith(prefix + 'help')) { // command list
+        const helpCommands = dbd.help(mod.isMod(user))
+        client.say(channel, helpCommands)
     }
     
     // mod only commands
@@ -79,17 +85,36 @@ client.on('message', async (channel, user, message, self) => {
             client.say(channel, clearReply)
         }
         // list votes
-        if (message.startsWith(prefix + 'listvotes') || message.startsWith(prefix + 'list votes')) {
+        else if (message.startsWith(prefix + 'listvotes') || message.startsWith(prefix + 'list votes')) {
             const listReply = await dbd.listVotes()
             client.say(channel, listReply)
         }
         // possibly announce?
 
-        
+        // close voting
+        else if (message.startsWith(prefix + 'close') || message.startsWith(prefix + 'closevoting') || message.startsWith(prefix + 'close voting')) {
+            let votingClosed = true
+            client.say(channel, 'Voting is now closed.')
+        }
+        else if (message.startsWith(prefix + 'open') || message.startsWith(prefix + 'openvoting') || message.startsWith(prefix + 'open voting')) {
+            let votingClosed = false
+            client.say(channel, 'Voting has been opened.')
+        }
     }
 })
 
-ipcMain.on('click', async () => {
+ipcMain.on('clear', async () => {
     const clearReply = await dbd.clear()
     client.say('#videovomit', clearReply)
+})
+
+ipcMain.on('toggleVoting', async () => {
+    if (votingClosed) {
+        votingClosed = false
+        client.say('#videovomit', 'Voting has been opened.')
+    }
+    else {
+        votingClosed = true
+        client.say('#videovomit', 'Voting is now closed.')
+    }
 })

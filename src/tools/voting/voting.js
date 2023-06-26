@@ -97,6 +97,12 @@ const myVote = async (user) => {
   }
 }
 
+const help = (userIsMod) => {
+  let commandsList = '!vote (killer) - send in your vote for the next killer. !myvote - see who you voted for.'
+  if (userIsMod) commandsList += ' ... Mods only: !clear - clear the votes board. !listvotes - see who all voted for what.'
+  return commandsList
+}
+
 const createTxtFile = (json) => {
   let text = ''
   const lastIdx = Object.keys(json).length - 1
@@ -116,4 +122,4 @@ const toJSON = (txt) => {
   return JSONobject
 }
 
-module.exports = { store, clear, listVotes, myVote }
+module.exports = { store, clear, listVotes, myVote, help }
