@@ -1,8 +1,8 @@
 {
   "name": "dbd-killer-voting",
   "productName": "dbd-killer-voting",
-  "version": "2.1.0",
-  "description": "My Electron application description",
+  "version": "2.2.0",
+  "description": "Twitch viewers vote for who they think might be killer in the next round of DBD.",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
@@ -15,8 +15,9 @@
   "author": "Hooley",
   "license": "MIT",
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0",
     "configparser": "0.3.10",
+    "electron-squirrel-startup": "^1.0.0",
+    "node-fetch": "2.6.6",
     "tmi.js": "1.8.5"
   },
   "devDependencies": {
