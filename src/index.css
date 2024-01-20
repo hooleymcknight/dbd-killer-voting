@@ -100,6 +100,18 @@ input {
   left: 10px;
 }
 
+.voting-app button#listvotes {
+  position: absolute;
+  bottom: 10px;
+  left: 30px;
+}
+
+.voting-app button#announce {
+  position: absolute;
+  bottom: 10px;
+  right: 30px;
+}
+
 /** -------- reconnect view ----------- **/
 .voting-app[data-state="reconnect"] img {
   max-width: 95%;
@@ -115,7 +127,7 @@ input {
   color: #fff;
 }
 
-.voting-app[data-state="edit"] select {
+.voting-app select {
   font-family: 'VCR';
   font-size: 20px;
   padding: 10px 20px;
@@ -214,4 +226,23 @@ input {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/** ---------- announce view ---------- **/
+.voting-app[data-state="announce"] .winner-select {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.voting-app[data-state="announce"] .winning-viewer {
+  color: #fff;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  left: 0;
+  bottom: 140px;
+  font-size: 40px;
 }

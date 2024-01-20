@@ -1,7 +1,7 @@
 const Store = require('./store.js');
 
-// const killerTextFile = 'H:/Documents/Coding/Apps/dbd-killer-voting/src/tools/voting/killer_list.txt';
-const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt';
+const killerTextFile = 'H:/Documents/Coding/Apps/dbd-killer-voting/dbd-killer-voting/src/tools/voting/killer_list.txt';
+// const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt';
 
 const store = new Store({
   configName: 'user-preferences',

@@ -88,6 +88,11 @@ const listVotes = async () => {
   }
 }
 
+const sendVotesObject = async () => {
+  const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
+  return killersVotes;
+}
+
 const myVote = async (user) => {
   const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
   const vote = Object.keys(killersVotes).filter(x => killersVotes[x] === user.username);
@@ -125,4 +130,4 @@ const toJSON = (txt) => {
   return JSONobject;
 }
 
-module.exports = { storeVote, clear, listVotes, myVote, help, createTxtFile };
+module.exports = { storeVote, clear, listVotes, myVote, help, createTxtFile, sendVotesObject };

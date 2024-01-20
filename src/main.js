@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, Tray } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, Tray, ipcRenderer } = require('electron');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -15,6 +15,8 @@ let client;
 let oauth = store.get('oauth');
 let clientId = store.get('clientId');
 let username = store.get('username');
+
+const twitchChannel = '#videovomit';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -97,7 +99,7 @@ const createWindow = () => {
     store.set('windowPosition', { x, y });
   });
 
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   return mainWindow;
 }
@@ -227,17 +229,22 @@ client.on('message', async (channel, user, message, self) => {
 
 ipcMain.on('clear', async () => {
   const clearReply = await dbd.clear();
-  client.say('#videovomit', clearReply);
+  client.say(twitchChannel, clearReply);
+});
+
+ipcMain.on('listvotes', async () => {
+  const listReply = await dbd.listVotes();
+  client.say(twitchChannel, listReply);
 });
 
 ipcMain.on('toggleVoting', async (event, data) => {
   if (data) {
     votingClosed = false;
-    client.say('#videovomit', 'Voting has been opened.');
+    client.say(twitchChannel, 'Voting has been opened.');
   }
   else {
     votingClosed = true;
-    client.say('#videovomit', 'Voting is now closed.');
+    client.say(twitchChannel, 'Voting is now closed.');
   }
 });
 
@@ -335,6 +342,21 @@ ipcMain.on('changeStrike', (event, data) => {
       if (killer != struck) newStruck.push(struck);
     });
     store.set('struckKillers', newStruck);
+  }
+});
+
+ipcMain.on('setAnnounceMode', async () => {
+  const votesObject = await dbd.sendVotesObject();
+  mainWindow.webContents.send('announceWinner', votesObject);
+});
+
+ipcMain.on('postWinner', (event, data) => {
+  const winningViewer = data;
+  if (data != ':(') {
+    client.say(twitchChannel, `Congratulations @${data}!! You win a steam game!`);
+  }
+  else {
+    client.say(twitchChannel, 'There\s no winner this time. :(');
   }
 });
 

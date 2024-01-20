@@ -4,6 +4,8 @@ import MainView from './components/MainView.jsx';
 import EditView from './components/EditView.jsx';
 import ReconnectView from './components/ReconnectView.jsx';
 import SetupView from './components/SetupView.jsx';
+import AnnounceView from './components/AnnounceView.jsx';
+
 const path = window.require('path');
 const ipcRenderer = window.require('electron').ipcRenderer;
 
@@ -14,6 +16,7 @@ const VotingApp = () => {
     const [previousState, setPreviousState] = React.useState('main');
     const [state, setState] = React.useState('main');
     const [votingState, setVotingState] = React.useState(false); // false == closed, true == open
+    const [votesObject, setVotesObject] = React.useState({});
 
     ipcRenderer.on('aggroModeToggle', (event, data) => {
         setAggroMode(data);
@@ -53,6 +56,10 @@ const VotingApp = () => {
         setState('edit');
     });
 
+    ipcRenderer.on('announceWinner', (event, data) => {
+        setVotesObject(data);
+    });
+
     const sendOauthToken = (token) => {
         ipcRenderer.send('updateOauth', token);
         setState(previousState);
@@ -78,41 +85,48 @@ const VotingApp = () => {
         state == prevState ? setState('main') : setState(prevState);
     }
 
-    React.useEffect(() => {
-        const toggleVoting = (e) => {
-            let openText = 'Open';
-            let closeText = 'Close';
-            if (e.target.closest('[data-aggro="true"]')) {
-                openText = 'Let People';
-                closeText = 'No More';
-            }
+    const clear = () => {
+        ipcRenderer.send('clear');
+    }
 
-            if (e.target.closest('#clear')) {
-                ipcRenderer.send('clear');
-            }
-            else if (e.target.closest('#closeVoting')) {
-                const closeVotingBtn = document.querySelector('#closeVoting span');
-                const txtVotingState = closeVotingBtn.textContent;
-        
-                if (txtVotingState == 'Close' || txtVotingState == 'No More') {
-                    closeVotingBtn.innerText = openText;
-                    setVotingState(true);
-                    ipcRenderer.send('toggleVoting', true);
-                }
-                else {
-                    closeVotingBtn.innerText = closeText;
-                    setVotingState(false);
-                    ipcRenderer.send('toggleVoting', false);
-                }
-            }
+    const listVotes = () => {
+        ipcRenderer.send('listvotes');
+    }
+
+    const toggleVoting = (newVotingState) => {
+        let openText = 'Open';
+        let closeText = 'Close';
+        if (aggroMode) {
+            openText = 'Let People';
+            closeText = 'No More';
         }
 
-        document.documentElement.addEventListener('click', toggleVoting);
+        if (newVotingState == false) {
+            setVotingState(true);
+            ipcRenderer.send('toggleVoting', true);
+        }
+        else {
+            setVotingState(false);
+            ipcRenderer.send('toggleVoting', false);
+        }
+    }
+
+    const goToAnnounceMode = () => {
+        setState('announce');
+        ipcRenderer.send('setAnnounceMode');
+    }
+
+    const postWinner = (winningViewer) => {
+        ipcRenderer.send('postWinner', winningViewer);
+    }
+
+    React.useEffect(() => {
+        
+
+        // document.documentElement.addEventListener('click', () => { toggleVoting(); });
 
         document.documentElement.addEventListener('keyup', (e) => {
-            console.log('keyup')
             if (e.target.closest('input') && e.key === 'Enter') {
-                console.log('enter in input')
                 if (e.target.type === 'text' && e.target.nextElementSibling.type === 'text') {
                     e.target.nextElementSibling.focus();
                 }
@@ -160,10 +174,21 @@ const VotingApp = () => {
                         onUnstrike={(killer) => changeStrike(killer, false)}
                         aggro={aggroMode}
                     />
+                : state == 'announce' ?
+                    <AnnounceView
+                        onBack={() => goBack(previousState)}
+                        aggro={aggroMode}
+                        data={votesObject}
+                        onWinner={(winningViewer) => postWinner(winningViewer)}
+                    />
                 :
                     <MainView
                         voting={votingState}
                         aggro={aggroMode}
+                        toggle={(newVotingState) => toggleVoting(newVotingState)}
+                        clear={() => clear()}
+                        listVotes={() => listVotes()}
+                        announce={() => goToAnnounceMode()}
                     />
                 }
             </main>
