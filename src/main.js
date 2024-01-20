@@ -99,7 +99,7 @@ const createWindow = () => {
     store.set('windowPosition', { x, y });
   });
 
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   return mainWindow;
 }
