@@ -1,8 +1,8 @@
 {
   "name": "dbd-killer-voting",
   "productName": "DBD Killer Voting",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "3.0.0",
+  "description": "DBD Killer Voting app for videovomit",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -14,9 +14,28 @@
   "keywords": [],
   "author": {
     "name": "Holly Phillips",
-    "email": "hmphillips93@gmail.com"
+    "email": "hooleymcknight.codes@gmail.com"
   },
   "license": "MIT",
+  "build": {
+    "appId": "DBD Killer Voting",
+    "productName": "DBD Killer Voting",
+    "win": {
+      "icon": "https://raw.githubusercontent.com/hooleymcknight/dbd-killer-voting/main/src/assets/favicon.ico"
+    },
+    "files": [
+      "./build/**/*",
+      "./dist/**/*",
+      "./node_modules/**/*",
+      "./public/**/*",
+      "./assets/**/*",
+      "./src/assets/**/*",
+      "*.js"
+    ],
+    "directories": {
+      "buildResources": "src/assets"
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.22.9",
     "@babel/preset-react": "^7.22.5",
@@ -32,14 +51,14 @@
     "css-loader": "^6.0.0",
     "electron": "25.3.1",
     "node-loader": "^2.0.0",
-    "style-loader": "^3.0.0"
+    "style-loader": "^3.0.0",
+    "electron-squirrel-startup": "^1.0.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "configparser": "^0.3.10",
-    "electron-squirrel-startup": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tmi.js": "^1.8.5"

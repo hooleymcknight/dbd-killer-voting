@@ -1,13 +1,20 @@
+const path = require('path');
+
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: './src/assets/favicon.ico',
+    // icon: './src/assets/dbd-perk_56.ico',
+    executableName: 'DBD Killer Voting',
+    iconUrl: 'https://raw.githubusercontent.com/hooleymcknight/dbd-killer-voting/main/src/assets/favicon.ico',
+    // iconUrl: 'C:/Users/Hooley/Downloads/dbd-perk_56.ico',
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        // iconUrl: 'C:/Users/Hooley/Downloads/dbd-perk_56.ico',
+      },
     },
     {
       name: '@electron-forge/maker-zip',
@@ -15,11 +22,15 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        // iconUrl: 'C:/Users/Hooley/Downloads/dbd-perk_56.ico',
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        // iconUrl: 'C:/Users/Hooley/Downloads/dbd-perk_56.ico',
+      },
     },
   ],
   plugins: [
@@ -36,6 +47,7 @@ module.exports = {
           config: './webpack.renderer.config.js',
           entryPoints: [
             {
+              // rhmr: 'react-hot-loader/patch',
               html: './src/index.html',
               js: './src/renderer.js',
               name: 'main_window',

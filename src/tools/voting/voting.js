@@ -1,16 +1,9 @@
 const fs = require('fs').promises;
-const path = require('path');
-// const ipcRenderer = window.require('electron').ipcRenderer;
-const { store } = require('../../helpers/helpers.js');
+const { store, killerTextFile } = require('../../helpers/helpers.js');
 
 const killerNicknames = store.get('killerNicknames');
 const killerBlank = store.get('killerBlank');
-const killerTextFile = 'H:/Documents/Coding/Apps/dbd-killer-voting/src/tools/voting/killer_list.txt';
-// const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt';
-
-// ipcRenderer.on('updateBlank', (event, data) => {
-//   console.log('update blank');
-// });
+const struckKillers = store.get('struckKillers');
 
 const storeVote = async (message, user) => {
   let vote = message.toLowerCase().split('vote')[1].trim();
@@ -29,6 +22,9 @@ const storeVote = async (message, user) => {
     }
     else if (killersVotes[`${processedVote}`].length) {
       return `@${user.username} someone already voted for this killer`;
+    }
+    else if (struckKillers.includes(processedVote)) {
+      return `@${user.username} this killer is currently struck from the game. pick another?`;
     }
     else {
       killersVotes[`${processedVote}`] = user.username;
@@ -129,4 +125,4 @@ const toJSON = (txt) => {
   return JSONobject;
 }
 
-module.exports = { storeVote, clear, listVotes, myVote, help };
+module.exports = { storeVote, clear, listVotes, myVote, help, createTxtFile };

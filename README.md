@@ -12,5 +12,14 @@ The Windows desktop app displays a button labeled "Clear Votes" which will autom
 
 ## Newest Updates
 
- - add a !help command or list of commands in the Windows app
- - add a "close voting" button and lock votes until re-opened
+ - added a !help command or list of commands in the Windows app
+ - added a "close voting" button and lock votes until re-opened
+ - Non-mods are now allowed to use the !listvotes command. Share the knowledge!
+
+## Recent Bug Fixes
+
+ - fixed the killers not being sorted alphabetically after adding new killers
+
+## Known Bugs (not yet fixed)
+
+ - voting must be opened/closed twice for the change to take effect
