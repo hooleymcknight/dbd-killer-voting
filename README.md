@@ -20,4 +20,4 @@ The Windows desktop app displays a button labeled "Clear Votes" which will autom
 ## Recent Bug Fixes
 
  - fixed the killers not being sorted alphabetically after adding new killers
- - voting must be opened/closed twice for the change to take effect
+ - fix the bug where voting had to be opened/closed twice for the change to take effect
