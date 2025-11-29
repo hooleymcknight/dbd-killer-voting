@@ -10,3 +10,23 @@ export function getStatic(val) {
   }
   return path.resolve(__static, val)
 }
+
+
+
+
+// console.log(`https://api.twitch.tv/helix/users?login=hooleymcknight&clientId:${clientId}`)
+// fetch(`https://api.twitch.tv/helix/users?login=hooleymcknight`, {
+//   method: 'GET',
+//   headers: {
+//     "Content-Type": "application/json",
+//     "Accept": "application/json",
+//     "OAuth": oauth,
+//   }
+// }).then((res) => {
+//   console.log('we got here')
+//   console.log(res);
+//   console.log(res.json())
+// }).catch(err => {
+//   console.log('didnot work')
+//   console.log(err);
+// })

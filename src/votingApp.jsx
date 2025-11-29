@@ -1,20 +1,22 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 import MainView from './components/MainView.jsx';
 import EditView from './components/EditView.jsx';
 import ReconnectView from './components/ReconnectView.jsx';
 import SetupView from './components/SetupView.jsx';
 import AnnounceView from './components/AnnounceView.jsx';
+import EditModsView from './components/EditModsView.jsx';
 
 const path = window.require('path');
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 const VotingApp = () => {
+    const [state, setState] = React.useState('main');
+    const [previousState, setPreviousState] = React.useState('main');
+    const [aggroMode, setAggroMode] = React.useState(false);
+
     const [killerNicknames, setKillerNicknames] = React.useState({});
     const [struckKillers, setstruckKillers] = React.useState(false);
-    const [aggroMode, setAggroMode] = React.useState(false);
-    const [previousState, setPreviousState] = React.useState('main');
-    const [state, setState] = React.useState('main');
+    
     const [votingState, setVotingState] = React.useState(false); // false == closed, true == open
     const [votesObject, setVotesObject] = React.useState({});
 
@@ -36,61 +38,39 @@ const VotingApp = () => {
         data[0] ? setState('edit') : setState(originalPreviousState);
     });
 
-    ipcRenderer.on('goToMain', (event, data) => {
-        setState('main');
-    })
-
-    ipcRenderer.on('startSetup', (event, data) => {
-        if (state !== 'setup') setPreviousState(state);
-        setState('setup');
-    });
-
-    ipcRenderer.on('reconnectTwitch', (event, data) => {
-        if (state !== 'reconnect') setPreviousState(state);
-        setState('reconnect');
-    });
-
-    ipcRenderer.on('editComplete', (event, data) => {
-        setKillerNicknames(data);
-        if (state !== 'edit') setPreviousState(state);
-        setState('edit');
+    ipcRenderer.on('changeState', (event, data) => {
+        switch(data[0]) {
+            case 'reconnectTwitch':
+                if (state !== 'reconnect') setPreviousState(state);
+                setState('reconnect');
+                break;
+            case 'editComplete':
+                setKillerNicknames(data[1]);
+                if (state !== 'edit') setPreviousState(state);
+                setState('edit');
+                break;
+            case 'startSetup':
+                if (state !== 'setup') setPreviousState(state);
+                setState('setup');
+                break;
+            case 'editMods':
+                if (state !== 'editMods') setPreviousState(state);
+                setState('editMods');
+                break;
+            case 'goToMain':
+            default:
+                // setPreviousState(state); // might work this in someday, I think I could use this to combine 'editModeToggle' into this switch
+                setState('main');
+                break;
+        }
     });
 
     ipcRenderer.on('announceWinner', (event, data) => {
         setVotesObject(data);
     });
 
-    const sendOauthToken = (token) => {
-        ipcRenderer.send('updateOauth', token);
-        setState(previousState);
-    }
-
-    const sendSetupData = (setupData) => {
-        ipcRenderer.send('updateSetup', setupData);
-    }
-
-    const changeNicknames = (nicknameData) => {
-        ipcRenderer.send('updateNicknames', nicknameData);
-    }
-
-    const addNewKiller = (newKillerName) => {
-        ipcRenderer.send('addNewKiller', newKillerName);
-    }
-
-    const changeStrike = (killer, strike) => {
-        ipcRenderer.send('changeStrike', [killer, strike]);
-    }
-
     const goBack = (prevState) => {
         state == prevState ? setState('main') : setState(prevState);
-    }
-
-    const clear = () => {
-        ipcRenderer.send('clear');
-    }
-
-    const listVotes = () => {
-        ipcRenderer.send('listvotes');
     }
 
     const toggleVoting = (newVotingState) => {
@@ -111,19 +91,7 @@ const VotingApp = () => {
         }
     }
 
-    const goToAnnounceMode = () => {
-        setState('announce');
-        ipcRenderer.send('setAnnounceMode');
-    }
-
-    const postWinner = (winningViewer) => {
-        ipcRenderer.send('postWinner', winningViewer);
-    }
-
     React.useEffect(() => {
-        
-
-        // document.documentElement.addEventListener('click', () => { toggleVoting(); });
 
         document.documentElement.addEventListener('keyup', (e) => {
             if (e.target.closest('input') && e.key === 'Enter') {
@@ -154,24 +122,24 @@ const VotingApp = () => {
                 {
                 state == 'setup' ?
                     <SetupView
-                        onSetupHandler={(setupData) => sendSetupData(setupData)}
+                        onSetupHandler={(setupData) => ipcRenderer.send('updateSetup', setupData)}
                         onBack={() => goBack(previousState)}
                         aggro={aggroMode}
                     />
                 : state == 'reconnect' ?
                     <ReconnectView
-                        onReconHandler={(token) => sendOauthToken(token)}
+                        onReconHandler={(token) => {ipcRenderer.send('updateOauth', token);setState(previousState)}}
                         onBack={() => goBack(previousState)}
                         aggro={aggroMode}
                     />
                 : state == 'edit' ?
                     <EditView
                         data={{nicknames: killerNicknames, struck: struckKillers}}
-                        onChangeNicknames={(nicknameData) => changeNicknames(nicknameData)}
-                        onAddKiller={(newKillerName) => addNewKiller(newKillerName)}
+                        onChangeNicknames={(nicknameData) => ipcRenderer.send('updateNicknames', nicknameData)}
+                        onAddKiller={(newKillerName) => ipcRenderer.send('addNewKiller', newKillerName)}
                         onBack={() => goBack(previousState)}
-                        onStrike={(killer) => changeStrike(killer, true)}
-                        onUnstrike={(killer) => changeStrike(killer, false)}
+                        onStrike={(killer) => ipcRenderer.send('changeStrike', [killer, true])}
+                        onUnstrike={(killer) => ipcRenderer.send('changeStrike', [killer, false])}
                         aggro={aggroMode}
                     />
                 : state == 'announce' ?
@@ -179,16 +147,21 @@ const VotingApp = () => {
                         onBack={() => goBack(previousState)}
                         aggro={aggroMode}
                         data={votesObject}
-                        onWinner={(winningViewer) => postWinner(winningViewer)}
+                        onWinner={(winningViewer) => ipcRenderer.send('postWinner', winningViewer)}
+                    />
+                : state == 'editMods' ?
+                    <EditModsView
+                        onBack={() => goBack(previousState)}
+                        aggro={aggroMode}
                     />
                 :
                     <MainView
                         voting={votingState}
                         aggro={aggroMode}
                         toggle={(newVotingState) => toggleVoting(newVotingState)}
-                        clear={() => clear()}
-                        listVotes={() => listVotes()}
-                        announce={() => goToAnnounceMode()}
+                        clear={() => ipcRenderer.send('clear')}
+                        listVotes={() => ipcRenderer.send('listvotes')}
+                        announce={() => {setState('announce');ipcRenderer.send('setAnnounceMode');}}
                     />
                 }
             </main>

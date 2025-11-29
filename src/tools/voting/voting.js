@@ -72,8 +72,14 @@ const clearReplies = [
 ];
 
 const clear = async () => {
+  const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
   await fs.writeFile(killerTextFile, createTxtFile(killerBlank));
-  return pickRandom(clearReplies);
+  return [pickRandom(clearReplies), killersVotes];
+}
+
+const undoClear = async (previousRound) => {
+  await fs.writeFile(killerTextFile, createTxtFile(previousRound));
+  return `undo! undo!`;
 }
 
 const listVotes = async () => {
@@ -117,7 +123,7 @@ const createTxtFile = (json) => {
   Object.keys(json).forEach((killer) => {
     text += `${killer} - ${json[killer]}`;
     Object.keys(json).indexOf(killer) === lastIdx ? text += '' : text += '\n';
-  })
+  });
   return text;
 }
 
@@ -130,4 +136,4 @@ const toJSON = (txt) => {
   return JSONobject;
 }
 
-module.exports = { storeVote, clear, listVotes, myVote, help, createTxtFile, sendVotesObject };
+module.exports = { storeVote, clear, undoClear, listVotes, myVote, help, createTxtFile, sendVotesObject };

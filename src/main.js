@@ -9,6 +9,7 @@ const mod = require('./tools/mod');
 const dbd = require('./tools/voting/voting');
 
 const { template, store, killerTextFile } = require('./helpers/helpers.js');
+const { clear } = require('console');
 
 let mainWindow;
 let client;
@@ -30,6 +31,13 @@ const createWindow = () => {
   let { width, height } = store.get('windowBounds');
   let x = store.get('windowPosition')?.x;
   let y = store.get('windowPosition')?.y;
+
+  if (store.get('modType') == null) {
+    store.set('modType', 'local');
+  }
+  if (store.get('localMods') == null) {
+    store.set('localMods', [{"username":"videovomit","id":"72383101"}]);
+  }
 
   // let settings = {
   //   width,
@@ -80,7 +88,7 @@ const createWindow = () => {
       mainWindow.webContents.send('aggroModeToggle', true);
     }
     if (!clientId || !username) {
-      mainWindow.webContents.send('startSetup', true);
+      mainWindow.webContents.send('changeState', ['startSetup']);
     }
     else if(!oauth || !oauth.length) {
       mainWindow.webContents.send('reconnectTwitch');
@@ -147,7 +155,7 @@ client = new tmi.client({
     username: username,
     password: `oauth:${oauth}`
   },
-  channels: ['hooleymcknight', 'videovomit']
+  channels: ['videovomit']
 });
 
 const connectToTwitch = () => {
@@ -170,15 +178,22 @@ const connectToTwitch = () => {
   });
 }
 
+const checkIfMod = (user) => {
+  if ((modType === 'twitch' && user.badges?.moderator) || (modType === 'local' && mod.isMod(user))) {
+    return true
+  }
+  return false;
+}
+
 connectToTwitch();
 
 client.on('message', async (channel, user, message, self) => {
   if (self) return;
   if (!message) return;
   if (message.charAt(0) !== prefix) return;
-  
+
   // vote
-  if (message.startsWith(prefix + 'vote')) {
+  if (message.toLowerCase().startsWith(prefix + 'vote')) {
     if (votingClosed) {
       client.say(channel, 'Voting is currently closed.');
       return;
@@ -186,36 +201,37 @@ client.on('message', async (channel, user, message, self) => {
     const voteReply = await dbd.storeVote(message, user);
     client.say(channel, voteReply);
   }
-  else if (message.startsWith(prefix + 'myvote')) { // who did I vote for
+  else if (message.toLowerCase().startsWith(prefix + 'myvote')) { // who did I vote for
     const myVoteReply = await dbd.myVote(user);
     client.say(channel, myVoteReply);
   }
-  else if (message.startsWith(prefix + 'help')) { // command list
+  else if (message.toLowerCase().startsWith(prefix + 'help')) { // command list
     const helpCommands = dbd.help(mod.isMod(user));
     client.say(channel, helpCommands);
   }
   // list votes
-  else if (message.startsWith(prefix + 'listvotes') || message.startsWith(prefix + 'list votes')) {
+  else if (message.toLowerCase().startsWith(prefix + 'listvotes') || message.toLowerCase().startsWith(prefix + 'list votes')) {
     const listReply = await dbd.listVotes();
     client.say(channel, listReply);
   }
   
   // mod only commands
-  if (mod.isMod(user)) {
+  if (checkIfMod(user)) {
       // clear votes
-    if (message.startsWith(prefix + 'clear')) {
+    if (message.toLowerCase().startsWith(prefix + 'clear')) {
       const clearReply = await dbd.clear();
-      client.say(channel, clearReply);
+      store.set('previousRound', clearReply[1]);
+      client.say(channel, clearReply[0]);
     }
     // possibly announce?
 
     // close voting
-    else if (message.startsWith(prefix + 'close') || message.startsWith(prefix + 'closevoting') || message.startsWith(prefix + 'close voting')) {
+    else if (message.toLowerCase().startsWith(prefix + 'close') || message.toLowerCase().startsWith(prefix + 'closevoting') || message.toLowerCase().startsWith(prefix + 'close voting')) {
       votingClosed = true;
       mainWindow.webContents.send('votingToggledManually', false); // false == voting closed, in the mainwindow
       client.say(channel, 'Voting is now closed.');
     }
-    else if (message.startsWith(prefix + 'open') || message.startsWith(prefix + 'openvoting') || message.startsWith(prefix + 'open voting')) {
+    else if (message.toLowerCase().startsWith(prefix + 'open') || message.toLowerCase().startsWith(prefix + 'openvoting') || message.toLowerCase().startsWith(prefix + 'open voting')) {
       votingClosed = false;
       mainWindow.webContents.send('votingToggledManually', true); // true == voting open, in the mainWindow
       client.say(channel, 'Voting has been opened.');
@@ -229,8 +245,14 @@ client.on('message', async (channel, user, message, self) => {
 
 ipcMain.on('clear', async () => {
   const clearReply = await dbd.clear();
-  client.say(twitchChannel, clearReply);
+  store.set('previousRound', clearReply[1]);
+  client.say(channel, clearReply[0]);
 });
+
+ipcMain.on('undoClear', async () => {
+  const undoClearReply = await dbd.undoClear(store.get('previousRound'));
+  client.say(channel, undoClearReply);
+})
 
 ipcMain.on('listvotes', async () => {
   const listReply = await dbd.listVotes();
@@ -259,7 +281,7 @@ ipcMain.on('updateSetup', async (event, data) => { // data: { clientId: clientId
   store.set('username', username);
 
   if (oauth && oauth.length) {
-    mainWindow.webContents.send('goToMain');
+    mainWindow.webContents.send('changeState', ['goToMain']);
   }
   else {
     const { shell } = require('electron');
@@ -281,14 +303,14 @@ ipcMain.on('updateOauth', (event, data) => {
       username: username, // conf.get('TWITCH', 'username'),
       password: `oauth:${oauth}`
     },
-    channels: ['hooleymcknight', 'videovomit']
+    channels: ['videovomit']
   });
   client.connect().catch(() => {
     
     mainWindow.webContents.on('did-finish-load', async () => {
       const { shell } = require('electron');
       await shell.openExternal(`https://id.twitch.tv/oauth2/authorize?client_id=${clientId}&redirect_uri=http://localhost:3000&response_type=token&scope=channel:moderate+chat:edit+chat:read`);
-      mainWindow.webContents.send('reconnectTwitch', true);
+      mainWindow.webContents.send('changeState', ['reconnectTwitch', true]);
     });
   });
 });
@@ -299,7 +321,7 @@ ipcMain.on('updateNicknames', (event, data) => {
   let currentNicknames = store.get('killerNicknames');
   currentNicknames[killerToEdit] = newNicknames;
   store.set('killerNicknames', currentNicknames);
-  mainWindow.webContents.send('editComplete', currentNicknames);
+  mainWindow.webContents.send('changeState', ['editComplete', currentNicknames]);
 });
 
 ipcMain.on('addNewKiller', async (event, data) => {
@@ -358,6 +380,31 @@ ipcMain.on('postWinner', (event, data) => {
   else {
     client.say(twitchChannel, 'There\s no winner this time. :(');
   }
+});
+
+ipcMain.on('requestLocalMods', () => {
+  mainWindow.webContents.send('localMods', [store.get('localMods'), clientId, oauth]);
+});
+
+ipcMain.on('addNewMod', (event, data) => {
+  let currentMods = store.get('localMods');
+
+  if (!currentMods.filter(x => x.username === data.username).length) {
+    currentMods.push(data);
+  }
+
+  let newMods = [...new Set(currentMods)];
+  store.set('localMods', newMods);
+  mainWindow.webContents.send('localMods', [newMods]);
+});
+
+ipcMain.on('removeMod', (event, data) => {
+  let currentMods = store.get('localMods');
+  let idxToRemove = currentMods.indexOf(currentMods.filter(x => x.username == data)[0]);
+  let newMods = [...currentMods];
+  newMods.splice(idxToRemove, 1);
+  store.set('localMods', newMods);
+  mainWindow.webContents.send('localMods', [newMods]);
 });
 
 module.exports = { clientId };

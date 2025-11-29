@@ -1,10 +1,10 @@
 {
-  "Trapper": ["trap"],
-  "Wraith": ["bingbong", "bing bong"],
+  "Trapper": ["trap", "the trapper"],
+  "Wraith": ["bingbong", "bing bong", "the wraith"],
   "Artist": ["art"],
   "Hillbilly": ["billy"],
   "Nurse": [],
-  "Myers": ["the shape", "michael", "michael myers", "shape"],
+  "Myers": ["the shape", "michael", "michael myers", "shape", "mikey", "mike"],
   "Hag": [],
   "Doctor": ["doc", "the doctor"],
   "Huntress": [],
@@ -15,10 +15,10 @@
   "Spirit": [],
   "Legion": [],
   "Plague": ["vommy mommy", "vommymommy"],
-  "Ghostface": ["ghosty", "ghostie", "ghost face"],
+  "Ghostface": ["ghosty", "ghostie", "ghost face", "ghostface"],
   "Demigrgn": ["demo", "demodog", "demo dog", "demigorgon", "demogorgon"],
   "Oni": [],
-  "DSlinger": ["dslinger", "gunslinger", "death slinger", "deathslinger"],
+  "DSlinger": ["dslinger", "gunslinger", "death slinger", "deathslinger", "deathslinger", "slinger"],
   "PyrmdHead": ["executioner", "pyramid head", "pyramid", "pyramidhead"],
   "Blight": [],
   "Twins": [],
@@ -30,5 +30,8 @@
   "Wesker": ["mastermind"],
   "Knight": [],
   "SkullMrch": ["skull", "skullmerch", "skull merchant", "skullmerchant"],
-  "Singlrty": ["singularity", "the singularity"]
-}
+  "Singlrty": ["singularity", "the singularity"],
+  "Xenomorph": ["xeno","alien","xenomorph"],
+  "Chucky": ["chuck"],
+  "Unknown": ["the unknown"]
+}    

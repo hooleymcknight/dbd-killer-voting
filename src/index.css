@@ -246,3 +246,32 @@ input {
   bottom: 140px;
   font-size: 40px;
 }
+
+/** ------------ edit mods view ------------- **/
+
+.voting-app[data-state="editMods"] .edit-mods-section {
+  color: #fff;
+}
+
+.edit-mods-section .existing-mod {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.existing-mod p {
+  margin: 0;
+  font-size: 20px;
+}
+
+.existing-mod button {
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-bottom: 0;
+  margin-left: 10px;
+}

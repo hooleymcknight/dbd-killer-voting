@@ -1,6 +1,7 @@
 Artist - 
 Blight - 
 Bubba - 
+Chucky - 
 Clown - 
 DSlinger - 
 Demigrgn - 
@@ -28,5 +29,7 @@ Spirit -
 Trapper - 
 Trickster - 
 Twins - 
+Unknown - 
 Wesker - 
 Wraith - 
+Xenomorph - 
