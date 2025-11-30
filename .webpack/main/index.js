@@ -10083,13 +10083,10 @@ function socketOnError() {
   \********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-const {
-  ipcRenderer
-} = __webpack_require__(/*! electron */ "electron");
 const Store = __webpack_require__(/*! ./store.js */ "./src/helpers/store.js");
+const killerTextFile = 'H:/Documents/Coding/Apps/dbd-killer-voting/dbd-killer-voting/src/tools/voting/killer_list.txt';
+// const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt';
 
-// const killerTextFile = 'H:/Documents/Coding/Apps/dbd-killer-voting/dbd-killer-voting/src/tools/voting/killer_list.txt';
-const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt';
 const store = new Store({
   configName: 'user-preferences',
   defaults: {
@@ -10209,15 +10206,14 @@ const store = new Store({
       "Xenomorph": ""
     },
     struckKillers: [],
-    oauth: '',
-    modType: 'local',
-    // other option is 'local'
-    localMods: [{
-      "username": "videovomit",
-      "id": "72383101"
-    }]
+    oauth: ''
+    // modType: 'local', // other option is 'local'
+    // localMods: [
+    //   {"username": "videovomit", "id": "72383101"},
+    // ],
   }
 });
+
 const template = [
 // { role: 'appMenu' }
 // ...(isMac
@@ -10245,7 +10241,7 @@ const template = [
     label: 'Undo Clear',
     type: 'normal',
     click: async (menuItem, browserWindow, event) => {
-      ipcRenderer.send('undoClear');
+      browserWindow.webContents.send('undoClear');
     }
   }]
 }, {
@@ -10260,16 +10256,20 @@ const template = [
         struck: store.get('struckKillers')
       }]);
     }
-  }, {
-    label: 'Mods',
-    submenu: [{
-      label: 'Edit Bot Mods',
-      type: 'normal',
-      click: (menuItem, browserWindow, event) => {
-        browserWindow.webContents.send('changeState', ['editMods', store.get('localMods')]);
-      }
-    }]
-  }]
+  }
+  //   {
+  //     label: 'Mods',
+  //     submenu: [
+  //       {
+  //         label: 'Edit Bot Mods',
+  //         type: 'normal',
+  //         click: (menuItem, browserWindow, event) => {
+  //           browserWindow.webContents.send('changeState', ['editMods', store.get('localMods')]);
+  //         }
+  //       }
+  //     ]
+  //   }
+  ]
 },
 // { role: 'viewMenu' }
 {
@@ -10436,7 +10436,7 @@ let client;
 let oauth = store.get('oauth');
 let clientId = store.get('clientId');
 let username = store.get('username');
-const twitchChannel = '#videovomit';
+const twitchChannel = '#videovomit'; // #videovomit, needs the hashtag bc that is how twitch reads shit
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (__webpack_require__(/*! electron-squirrel-startup */ "./node_modules/electron-squirrel-startup/index.js")) {
@@ -10451,9 +10451,6 @@ const createWindow = () => {
   } = store.get('windowBounds');
   let x = store.get('windowPosition')?.x;
   let y = store.get('windowPosition')?.y;
-  if (store.get('modType') == null) {
-    store.set('modType', 'local');
-  }
   if (store.get('localMods') == null) {
     store.set('localMods', [{
       "username": "videovomit",
@@ -10604,12 +10601,14 @@ const connectToTwitch = () => {
     });
   });
 };
-const checkIfMod = user => {
-  if (modType === 'twitch' && user.badges?.moderator || modType === 'local' && mod.isMod(user)) {
-    return true;
-  }
-  return false;
-};
+
+// const checkIfMod = (user) => {
+//     if ((modType === 'twitch' && user.badges?.moderator) || (modType === 'local' && mod.isMod(user))) {
+//         return true
+//     }
+//     return false;
+// }
+
 connectToTwitch();
 client.on('message', async (channel, user, message, self) => {
   if (self) return;
@@ -10640,26 +10639,27 @@ client.on('message', async (channel, user, message, self) => {
   }
 
   // mod only commands
-  if (checkIfMod(user)) {
-    // clear votes
-    if (message.toLowerCase().startsWith(prefix + 'clear')) {
-      const clearReply = await dbd.clear();
-      store.set('previousRound', clearReply[1]);
-      client.say(channel, clearReply[0]);
-    }
-    // possibly announce?
+  // if (checkIfMod(user)) {
+  //     // clear votes
+  //     if (message.toLowerCase().startsWith(prefix + 'clear')) {
+  //         const clearReply = await dbd.clear();
+  //         store.set('previousRound', clearReply[1]);
+  //         client.say(channel, clearReply[0]);
+  //     }
+  //     // possibly announce?
 
-    // close voting
-    else if (message.toLowerCase().startsWith(prefix + 'close') || message.toLowerCase().startsWith(prefix + 'closevoting') || message.toLowerCase().startsWith(prefix + 'close voting')) {
-      votingClosed = true;
-      mainWindow.webContents.send('votingToggledManually', false); // false == voting closed, in the mainwindow
-      client.say(channel, 'Voting is now closed.');
-    } else if (message.toLowerCase().startsWith(prefix + 'open') || message.toLowerCase().startsWith(prefix + 'openvoting') || message.toLowerCase().startsWith(prefix + 'open voting')) {
-      votingClosed = false;
-      mainWindow.webContents.send('votingToggledManually', true); // true == voting open, in the mainWindow
-      client.say(channel, 'Voting has been opened.');
-    }
-  }
+  //     // close voting
+  //     else if (message.toLowerCase().startsWith(prefix + 'close') || message.toLowerCase().startsWith(prefix + 'closevoting') || message.toLowerCase().startsWith(prefix + 'close voting')) {
+  //         votingClosed = true;
+  //         mainWindow.webContents.send('votingToggledManually', false); // false == voting closed, in the mainwindow
+  //         client.say(channel, 'Voting is now closed.');
+  //     }
+  //     else if (message.toLowerCase().startsWith(prefix + 'open') || message.toLowerCase().startsWith(prefix + 'openvoting') || message.toLowerCase().startsWith(prefix + 'open voting')) {
+  //         votingClosed = false;
+  //         mainWindow.webContents.send('votingToggledManually', true); // true == voting open, in the mainWindow
+  //         client.say(channel, 'Voting has been opened.');
+  //     }
+  // }
 });
 
 // =====================================
@@ -10669,11 +10669,11 @@ client.on('message', async (channel, user, message, self) => {
 ipcMain.on('clear', async () => {
   const clearReply = await dbd.clear();
   store.set('previousRound', clearReply[1]);
-  client.say(channel, clearReply[0]);
+  client.say(twitchChannel, clearReply[0]);
 });
 ipcMain.on('undoClear', async () => {
   const undoClearReply = await dbd.undoClear(store.get('previousRound'));
-  client.say(channel, undoClearReply);
+  client.say(twitchChannel, undoClearReply);
 });
 ipcMain.on('listvotes', async () => {
   const listReply = await dbd.listVotes();

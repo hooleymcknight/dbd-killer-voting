@@ -1,7 +1,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+const ipcRenderer = window.require('electron').ipcRenderer;
 
 const MainView = (props) => {
+
+    ipcRenderer.on('undoClear', (event, data) => {
+        ipcRenderer.send('undoClear', {});
+    });
 
     return (
         <>

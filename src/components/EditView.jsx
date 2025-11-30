@@ -50,6 +50,10 @@ const EditView = (props) => {
         }
     }
 
+    const changeKillerOriginalName = (e) => {
+        //
+    }
+
     const addNickname = (e) => {
         e.target.insertAdjacentHTML('beforebegin', `<input type="text" value="" placeholder="Add new nickname"></input>`);
         e.target.closest('.nickname-inputs').querySelector('input:last-of-type').focus();
@@ -166,6 +170,9 @@ const EditView = (props) => {
                         <option key={x} value={x}>{x} </option>
                     )}
                 </select>
+                <button type="button" id="edit-killer-original-name" onClick={(e) => {changeKillerOriginalName(e)}}>
+                    <img src="https://raw.githubusercontent.com/hooleymcknight/dbd-killer-voting/main/src/assets/syringe.png" alt="syringe icon" />
+                </button>
                 {activeKiller ?
                 <>
                     <div className="edit-section">

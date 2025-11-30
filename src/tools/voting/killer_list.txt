@@ -9,7 +9,7 @@ Doctor -
 Dredge - 
 Freddy - 
 Ghostface - 
-Hag - 
+Hag - videovomit
 Hillbilly - 
 Huntress - 
 Knight - 
@@ -17,7 +17,7 @@ Legion -
 Myers - 
 Nemesis - 
 Nurse - 
-Oni - 
+Oni - hollyngrade
 Pig - 
 Pinhead - 
 Plague - 
@@ -29,7 +29,6 @@ Spirit -
 Trapper - 
 Trickster - 
 Twins - 
-Unknown - 
 Wesker - 
 Wraith - 
 Xenomorph - 

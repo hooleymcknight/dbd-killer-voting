@@ -1,8 +1,7 @@
-const { ipcRenderer } = require('electron');
 const Store = require('./store.js');
 
-// const killerTextFile = 'H:/Documents/Coding/Apps/dbd-killer-voting/dbd-killer-voting/src/tools/voting/killer_list.txt';
-const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt';
+const killerTextFile = 'H:/Documents/Coding/Apps/dbd-killer-voting/dbd-killer-voting/src/tools/voting/killer_list.txt';
+// const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt';
 
 const store = new Store({
   configName: 'user-preferences',
@@ -13,10 +12,10 @@ const store = new Store({
     previousRound: {"Artist": "", "Blight": "", "Bubba": "", "Chucky": "", "Clown": "", "DSlinger": "", "Demigrgn": "", "Doctor": "", "Dredge": "", "Freddy": "", "Ghostface": "", "Hag": "", "Hillbilly": "", "Huntress": "", "Knight": "", "Legion": "", "Myers": "", "Nemesis": "", "Nurse": "", "Oni": "", "Pig": "", "Pinhead": "", "Plague": "", "PyrmdHead": "", "Sadako": "", "Singlrty": "", "SkullMrch": "", "Spirit": "", "Trapper": "", "Trickster": "", "Twins": "", "Unknown": "", "Wesker": "", "Wraith": "", "Xenomorph":""},
     struckKillers: [],
     oauth: '',
-    modType: 'local', // other option is 'local'
-    localMods: [
-      {"username": "videovomit", "id": "72383101"},
-    ],
+    // modType: 'local', // other option is 'local'
+    // localMods: [
+    //   {"username": "videovomit", "id": "72383101"},
+    // ],
   }
 });
 
@@ -47,7 +46,7 @@ const template = [
         label: 'Undo Clear',
         type: 'normal',
         click: async (menuItem, browserWindow, event) => {
-          ipcRenderer.send('undoClear');
+          browserWindow.webContents.send('undoClear');
         }
       },
     ]
@@ -63,18 +62,18 @@ const template = [
           browserWindow.webContents.send('editModeToggle', [menuItem.checked, { nicknames: store.get('killerNicknames'), struck: store.get('struckKillers') }]);
         }
       },
-      {
-        label: 'Mods',
-        submenu: [
-          {
-            label: 'Edit Bot Mods',
-            type: 'normal',
-            click: (menuItem, browserWindow, event) => {
-              browserWindow.webContents.send('changeState', ['editMods', store.get('localMods')]);
-            }
-          }
-        ]
-      }
+    //   {
+    //     label: 'Mods',
+    //     submenu: [
+    //       {
+    //         label: 'Edit Bot Mods',
+    //         type: 'normal',
+    //         click: (menuItem, browserWindow, event) => {
+    //           browserWindow.webContents.send('changeState', ['editMods', store.get('localMods')]);
+    //         }
+    //       }
+    //     ]
+    //   }
     ]
   },
   // { role: 'viewMenu' }
