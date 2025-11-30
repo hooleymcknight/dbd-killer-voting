@@ -3,17 +3,14 @@ const path = require('path');
 module.exports = {
   packagerConfig: {
     asar: true,
-    // icon: './src/assets/dbd-perk_56.ico',
     executableName: 'DBD Killer Voting',
-    iconUrl: 'https://raw.githubusercontent.com/hooleymcknight/dbd-killer-voting/main/src/assets/favicon.ico',
-    // iconUrl: 'C:/Users/Hooley/Downloads/dbd-perk_56.ico',
+    icon: './src/assets/icons/win/favicon.ico',
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        // iconUrl: 'C:/Users/Hooley/Downloads/dbd-perk_56.ico',
       },
     },
     {
@@ -23,13 +20,11 @@ module.exports = {
     {
       name: '@electron-forge/maker-deb',
       config: {
-        // iconUrl: 'C:/Users/Hooley/Downloads/dbd-perk_56.ico',
       },
     },
     {
       name: '@electron-forge/maker-rpm',
       config: {
-        // iconUrl: 'C:/Users/Hooley/Downloads/dbd-perk_56.ico',
       },
     },
   ],

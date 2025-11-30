@@ -84,7 +84,8 @@ const undoClear = async (previousRound) => {
 
 const listVotes = async () => {
   const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
-  const votes = Object.keys(killersVotes).filter(x => killersVotes[x].length);
+  const votes = Object.keys(killersVotes).filter(x => killersVotes[x].length && killersVotes[x] != '\r');
+  // excluding \r values ensures that anything recorded as a Return in other file end types won't get the bot confused
 
   if (!votes.length) {
     return `there are no votes yet`;
@@ -128,12 +129,12 @@ const createTxtFile = (json) => {
 }
 
 const toJSON = (txt) => {
-  let keys = txt.split('\n');
-  let JSONobject = {};
-  keys.forEach((line) => {
-    JSONobject[line.split(' - ')[0]] = line.split(' - ')[1];
-  })
-  return JSONobject;
+    let keys = txt.split('\n');
+    let JSONobject = {};
+    keys.forEach((line) => {
+        JSONobject[line.split(' - ')[0]] = line.split(' - ')[1];
+    })
+    return JSONobject;
 }
 
 module.exports = { storeVote, clear, undoClear, listVotes, myVote, help, createTxtFile, sendVotesObject };

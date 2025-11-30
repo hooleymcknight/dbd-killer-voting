@@ -1,7 +1,7 @@
 {
   "name": "dbd-killer-voting",
   "productName": "DBD Killer Voting",
-  "version": "3.0.0",
+  "version": "3.1.1",
   "description": "DBD Killer Voting app for videovomit",
   "main": ".webpack/main",
   "scripts": {
@@ -20,8 +20,9 @@
   "build": {
     "appId": "DBD Killer Voting",
     "productName": "DBD Killer Voting",
+    "icon": "./src/assets/icons/win/favicon.ico",
     "win": {
-      "icon": "https://raw.githubusercontent.com/hooleymcknight/dbd-killer-voting/main/src/assets/favicon.ico"
+      "icon": "./src/assets/icons/win/favicon.ico"
     },
     "files": [
       "./build/**/*",

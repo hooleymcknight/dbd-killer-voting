@@ -275,3 +275,49 @@ input {
   margin-bottom: 0;
   margin-left: 10px;
 }
+
+/** edit killer name **/
+
+.edit-killer-main-name {
+    position: relative;
+}
+.killer-dropdown-container {
+    display: flex;
+}
+
+button#submit-new-killer-name {
+    background: transparent;
+    border: none;
+    font-weight: bold;
+    position: absolute;
+    padding: 0 10px;
+    margin-bottom: 0;
+    right: 0;
+}
+
+button#edit-killer-original-name {
+    height: 44px;
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 2px 8px;
+}
+
+button#edit-killer-original-name img {
+    height: 100%;
+    width: auto;
+}
+
+.relaunching {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    font-size: 40px;
+}

@@ -8,6 +8,8 @@ const EditView = (props) => {
     const [activeKiller, setActiveKiller] = React.useState('');
     const [activeIsStruck, setActiveIsStruck] = React.useState(props.data.struck.includes(activeKiller) || false);
     const [addingKiller, setAddingKiller] = React.useState(false);
+    const [changingMainName, setChangingMainName] = React.useState(false);
+    const [relaunching, setRelaunching] = React.useState(false);
 
     const backToEdit = () => {
         resetError();
@@ -50,8 +52,21 @@ const EditView = (props) => {
         }
     }
 
-    const changeKillerOriginalName = (e) => {
-        //
+    const killerNameInputHandler = (e) => {
+        if (e.key === 'Enter') {
+            document.querySelector('#submit-new-killer-name').click();
+        }
+        else {
+            console.log(document.querySelector('#change-killer-name').value)
+        }
+    }
+
+    const changeKillerMainName = (e) => {
+        const newName = document.querySelector('#change-killer-name').value;
+        setRelaunching(true);
+        setTimeout(() => {
+            ipcRenderer.send('change-killer-main-name', [activeKiller, newName]);
+        }, 3000);
     }
 
     const addNickname = (e) => {
@@ -164,15 +179,28 @@ const EditView = (props) => {
                 {/* <button id="back" type="button" onClick={backToMain}>←</button> */}
                 <button type="button" id="add-new" onClick={() => {setAddingKiller(true)}}>+</button>
                 <h1>{props.aggro ? 'Barbie Dress-Up' : 'Edit Killer'}</h1>
-                <select onChange={(e) => changeActiveKiller(e)} defaultValue="">
-                    <option disabled value="">{props.aggro ? 'Pick a baddie' : 'Choose a killer'}</option>
-                    {Object.keys(props.data.nicknames).map(x =>
-                        <option key={x} value={x}>{x} </option>
-                    )}
-                </select>
-                <button type="button" id="edit-killer-original-name" onClick={(e) => {changeKillerOriginalName(e)}}>
-                    <img src="https://raw.githubusercontent.com/hooleymcknight/dbd-killer-voting/main/src/assets/syringe.png" alt="syringe icon" />
-                </button>
+                <div className="killer-dropdown-container">
+                    { changingMainName && activeKiller ? 
+                    <div className="edit-killer-main-name">
+                        <input type="text" id="change-killer-name" defaultValue={activeKiller} onKeyUp={(e) => {killerNameInputHandler(e)}} />
+                        <button type="button" id="submit-new-killer-name" alt="update killer name" onClick={(e) => {changeKillerMainName(e)}}>✓</button>
+                    </div>
+                    :
+                    <>
+                        <select onChange={(e) => changeActiveKiller(e)} defaultValue="">
+                            <option disabled value="">{props.aggro ? 'Pick a baddie' : 'Choose a killer'}</option>
+                            {Object.keys(props.data.nicknames).sort().map(x =>
+                                <option key={x} value={x}>{x} </option>
+                            )}
+                        </select>
+                        { activeKiller ? 
+                            <button type="button" id="edit-killer-original-name" onClick={(e) => {setChangingMainName(true)}}>
+                                <img src="https://github.com/hooleymcknight/dbd-killer-voting/blob/main/src/assets/syringe.png?raw=true" alt="syringe icon" />
+                            </button>
+                        : ''}
+                    </>
+                    }
+                </div>
                 {activeKiller ?
                 <>
                     <div className="edit-section">
@@ -196,7 +224,9 @@ const EditView = (props) => {
                 }
             </>
             }
-            
+            { relaunching ? 
+                <div className="relaunching"> <span>Success! Restarting app...</span> </div>
+            : ''}
         </>
     );
 }

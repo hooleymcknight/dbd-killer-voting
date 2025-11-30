@@ -17,7 +17,7 @@ let oauth = store.get('oauth');
 let clientId = store.get('clientId');
 let username = store.get('username');
 
-const twitchChannel = '#videovomit'; // #videovomit, needs the hashtag bc that is how twitch reads shit
+const twitchChannel = '#hollyngrade'; // #videovomit, needs the hashtag bc that is how twitch reads shit
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -65,6 +65,7 @@ const createWindow = () => {
         height,
         x,
         y,
+        // icon: path.join(__dirname, 'assets/icons/png/56x56.png'),
         // icon: 'C:/Users/Hooley/Downloads/dbd-perk_56.ico',
         webPreferences: {
             webSecurity: false,
@@ -104,7 +105,7 @@ const createWindow = () => {
         store.set('windowPosition', { x, y });
     });
 
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     return mainWindow;
 }
@@ -152,7 +153,7 @@ client = new tmi.client({
         username: username,
         password: `oauth:${oauth}`
     },
-    channels: ['videovomit']
+    channels: [twitchChannel.replace('#','')]
 });
 
 const connectToTwitch = () => {
@@ -321,13 +322,17 @@ ipcMain.on('updateNicknames', (event, data) => {
     mainWindow.webContents.send('changeState', ['editComplete', currentNicknames]);
 });
 
-ipcMain.on('addNewKiller', async (event, data) => {
+const addNewKillerName = async (newName, originalName) => {
     // update the voting blank killers list (json)
     let killerBlank = store.get('killerBlank');
 
     // need to capitalize the first letter of the new killer name, otherwise it won't sort right.
-    let capitalizedData = data.charAt(0).toUpperCase() + data.substr(1, data.length - 1);
+    let capitalizedData = newName.charAt(0).toUpperCase() + newName.substr(1, newName.length - 1);
     killerBlank[capitalizedData] = "";
+
+    if (originalName) {
+        delete killerBlank[originalName];
+    }
 
     let keys = Object.keys(killerBlank).sort();
     let sortedKillerBlank = {};
@@ -336,15 +341,42 @@ ipcMain.on('addNewKiller', async (event, data) => {
     });
     
     store.set('killerBlank', sortedKillerBlank);
+    store.set('previousRound', sortedKillerBlank);
 
-    // update the killer nicknames json
+    // update the killer nicknames json object in store
     let killerNicknames = store.get('killerNicknames');
-    killerNicknames[capitalizedData] = [];
+    if (!originalName) { // not a name change, so no nicknames to transfer
+        killerNicknames[capitalizedData] = [];
+    }
+    else {
+        let currentNicknames = killerNicknames[originalName];
+        killerNicknames[capitalizedData] = currentNicknames;
+        delete killerNicknames[originalName];
+    }
+
     store.set('killerNicknames', killerNicknames);
 
     // update the display .txt file
     await fs.writeFile(killerTextFile, dbd.createTxtFile(sortedKillerBlank));
+}
+
+ipcMain.on('addNewKiller', (event, data) => {
+    addNewKillerName(data)
     mainWindow.webContents.send('addComplete', true);
+});
+
+// ipcRenderer.send('change-killer-main-name', document.querySelector('#change-killer-name').value);
+ipcMain.on('change-killer-main-name', (event, data) => {
+    console.log('received new killer main name...', data[1]);
+    const originalName = data[0];
+    const newName = data[1];
+
+    addNewKillerName(newName, originalName);
+
+    // Prepare for relaunch
+    app.relaunch();
+    // Quit the current instance, triggering the relaunch
+    app.exit()
 });
 
 ipcMain.on('changeStrike', (event, data) => {

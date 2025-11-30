@@ -116,7 +116,6 @@ const VotingApp = () => {
 
     return (
         <>
-            {/* <img className="bg-img" src={path.resolve(__dirname, '../../../../../../src/assets/dbd-bg.jpg')}/> */}
             <img className="bg-img" src="https://raw.githubusercontent.com/hooleymcknight/dbd-killer-voting/main/src/assets/dbd-bg.jpg" alt="ghostface standing over a guy he stabbed" />
             <main className="voting-app" data-state={state} data-aggro={aggroMode}>
                 {
