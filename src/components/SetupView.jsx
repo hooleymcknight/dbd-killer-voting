@@ -1,18 +1,22 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-const path = window.require('path');
+// import { useState, useEffect } from 'react';
+
+const ipcRenderer = window.require('electron').ipcRenderer;
 
 const SetupView = (props) => {
+    const [username, setUsername] = React.useState('');
+    const [oauth, setOauth] = React.useState('');
 
     const setupHandler = (e) => {
         e.preventDefault();
-        const clientId = e.target.parentElement.querySelector('#clientId').value;
+        const oauthCode = e.target.parentElement.querySelector('#oauthCode').value;
         const username = e.target.parentElement.querySelector('#username').value;
         const setupAlert = e.target.closest('.setup-section').querySelector('.setup-alert');
 
-        if (!clientId || !username) {
+        if (!oauthCode || !username) {
             if (setupAlert) {
-                e.target.closest('[data-aggro="true"]') ? setupAlert.innerText = '...I need info??' : setupAlert.innerText = 'Please enter both your client ID and your username';
+                setupAlert.innerText = 'Please enter both your username and the oauth code.';
                 setupAlert.classList.remove('hidden');
                 setTimeout(() => {
                     setupAlert.classList.add('hidden');
@@ -21,13 +25,13 @@ const SetupView = (props) => {
         }
         else {
             if (setupAlert) {
-                e.target.closest('[data-aggro="true"]') ? setupAlert.innerText = 'I need your SSN too /j' : setupAlert.innerText = 'Submitted!';
+                setupAlert.innerText = 'Submitted!';
                 setupAlert.classList.remove('hidden');
                 setTimeout(() => {
                     setupAlert.classList.add('hidden');
                 }, 6000);
             }
-            props.onSetupHandler({ clientId: clientId, username: username });
+            props.onSetupHandler({ oauthCode: oauthCode, username: username });
         }
     }
 
@@ -35,14 +39,29 @@ const SetupView = (props) => {
         props.onBack();
     }
 
+    React.useEffect(() => {
+        if (!oauth.length && !username.length) {
+            ipcRenderer.send('startSetup');
+        }
+
+        ipcRenderer.on('sendSetupData', (event, data) => {
+            if (!oauth.length && data.oauth?.length) {
+                setOauth(data.oauth);
+            }
+            if (!username.length && data.username?.length) {
+                setUsername(data.username);
+            }
+        });
+    }, []);
+
     return (
         <>
             <button id="back" type="button" onClick={backToMain}>←</button>
             <div className="setup-section">
-                <h1>{props.aggro ? 'Get Your Shit Together' : 'Set Up Twitch'}</h1>
-                <input id="clientId" type="text" placeholder="client id here"></input>
-                <input id="username" type="text" placeholder="bot username here"></input>
-                <button id="submitSetup" type="submit" onClick={(e) => setupHandler(e)}>{props.aggro ? 'Save Your Shit' : 'Submit'}</button>
+                <h1>Set Up Twitch</h1>
+                <input id="oauthCode" type="text" placeholder="oauth code here" defaultValue={oauth}></input>
+                <input id="username" type="text" placeholder="bot username here" defaultValue={username}></input>
+                <button id="submitSetup" type="submit" onClick={(e) => setupHandler(e)}>Submit</button>
                 <p className="setup-alert hidden"></p>
             </div>
         </>

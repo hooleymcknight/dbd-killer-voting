@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   packagerConfig: {
     asar: true,
-    executableName: 'DBD Killer Voting',
+    executableName: 'Guess the Killer',
     icon: './src/assets/icons/win/favicon.ico',
   },
   rebuildConfig: {},

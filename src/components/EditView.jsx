@@ -26,7 +26,7 @@ const EditView = (props) => {
         if (!newKillerName.length) {
             const addAlertMsg = document.querySelector('.add-complete');
             if (addAlertMsg) {
-                document.querySelector('[data-aggro="true"]') ? addAlertMsg.innerText = 'No' : addAlertMsg.innerText = 'Please enter a name';
+                addAlertMsg.innerText = 'Please enter a name';
                 addAlertMsg.classList.remove('hidden');
                 changesSavedTimeout = setTimeout(() => {
                     addAlertMsg.classList.add('hidden');
@@ -138,7 +138,7 @@ const EditView = (props) => {
             }
             
             if (alertMsg) {
-                document.querySelector('[data-aggro="true"]') ? alertMsg.innerText = 'Don\'t remember asking but thanks' : alertMsg.innerText = 'Changes saved!'
+                alertMsg.innerText = 'Changes saved!'
                 alertMsg.classList.remove('hidden');
 
                 changesSavedTimeout = setTimeout(() => {
@@ -151,7 +151,7 @@ const EditView = (props) => {
             const addAlertMsg = document.querySelector('.add-complete');
             if (addAlertMsg) {
                 document.querySelector('input.new-killer').value = '';
-                document.querySelector('[data-aggro="true"]') ? addAlertMsg.innerText = 'Took you long enough' : addAlertMsg.innerText = 'Killer added!';
+                addAlertMsg.innerText = 'Killer added!';
                 addAlertMsg.classList.remove('hidden');
                 changesSavedTimeout = setTimeout(() => {
                     addAlertMsg.classList.add('hidden');
@@ -167,10 +167,10 @@ const EditView = (props) => {
             <>
                 <button id="back" type="button" onClick={backToEdit}>←</button>
                 <div className="edit-section">
-                    <h1>{props.aggro ? 'Who\'s the New Kid?' : 'Add New Killer'}</h1>
+                    <h1>Add New Killer</h1>
                     <p className="add-warning">WARNING: Doing this will erase all current votes.</p>
                     <input className="new-killer" type="text" defaultValue="" placeholder="Display name"></input>
-                    <button type="submit" id="submit-new" onClick={(e) => addKiller(e)}>{props.aggro ? 'Sometime today' : 'Submit Changes'}</button>
+                    <button type="submit" id="submit-new" onClick={(e) => addKiller(e)}>Submit Changes</button>
                     <p className="add-complete hidden"></p>
                 </div>
             </>
@@ -178,7 +178,7 @@ const EditView = (props) => {
             <>
                 {/* <button id="back" type="button" onClick={backToMain}>←</button> */}
                 <button type="button" id="add-new" onClick={() => {setAddingKiller(true)}}>+</button>
-                <h1>{props.aggro ? 'Barbie Dress-Up' : 'Edit Killer'}</h1>
+                <h1>Edit Killer</h1>
                 <div className="killer-dropdown-container">
                     { changingMainName && activeKiller ? 
                     <div className="edit-killer-main-name">
@@ -188,7 +188,7 @@ const EditView = (props) => {
                     :
                     <>
                         <select onChange={(e) => changeActiveKiller(e)} defaultValue="">
-                            <option disabled value="">{props.aggro ? 'Pick a baddie' : 'Choose a killer'}</option>
+                            <option disabled value="">Choose a killer</option>
                             {Object.keys(props.data.nicknames).sort().map(x =>
                                 <option key={x} value={x}>{x} </option>
                             )}
@@ -204,19 +204,19 @@ const EditView = (props) => {
                 {activeKiller ?
                 <>
                     <div className="edit-section">
-                        <p>{props.aggro ? 'Who that bitch be?' : 'Killer nicknames:'}</p>
+                        <p>Killer nicknames:</p>
                         <div className="nickname-inputs">
                             {props.data.nicknames[activeKiller].map(x => <input key={x} type="text" defaultValue={x}></input>)}
-                            <input className="new-input" type="text" defaultValue="" placeholder={props.aggro ? "Who the fuck are you" : "Add new nickname"} ></input>
+                            <input className="new-input" type="text" defaultValue="" placeholder="Add new nickname" ></input>
                             <button type="button" id="add-nickname" onClick={(e) => addNickname(e)}>+</button>
                         </div>
-                        <button type="submit" id="submit-changes" onClick={(e) => submitChanges(e)}>{props.aggro ? 'Get on with it' : 'Submit Changes'}</button>
+                        <button type="submit" id="submit-changes" onClick={(e) => submitChanges(e)}>Submit Changes</button>
                         <p className="alert-message hidden"></p>
                     </div>
                     { activeIsStruck ?
-                        <button type="button" className="strike-btn" id="unstrike" onClick={() => {unstrike(activeKiller)}}>{props.aggro ? 'Put me in, Coach.' : 'Unstrike'}</button>
+                        <button type="button" className="strike-btn" id="unstrike" onClick={() => {unstrike(activeKiller)}}>Unstrike</button>
                     :
-                        <button type="button" className="strike-btn" id="strike" onClick={() => {strike(activeKiller)}}>Strike{props.aggro ? '!!! They out' : ''}</button>
+                        <button type="button" className="strike-btn" id="strike" onClick={() => {strike(activeKiller)}}>Strike</button>
                     }
                 </>
                 :

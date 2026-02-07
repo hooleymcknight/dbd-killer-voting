@@ -112,9 +112,10 @@
     "Unknown": [
         "the unknown"
     ],
-    "Vecna": [
+    "VecnaDND": [
         "lich",
-        "the lich"
+        "the lich",
+        "vecna dnd"
     ],
     "Dracula": [
         "drac"
@@ -138,5 +139,8 @@
     ],
     "Krasue": [
         "the krasue"
+    ],
+    "VecnaST": [
+        "vecna st"
     ]
 }

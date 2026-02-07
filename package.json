@@ -1,8 +1,8 @@
 {
-  "name": "dbd-killer-voting",
-  "productName": "DBD Killer Voting",
-  "version": "3.1.1",
-  "description": "DBD Killer Voting app for videovomit",
+  "name": "guess-the-killer",
+  "productName": "Guess the Killer",
+  "version": "3.2.0",
+  "description": "Guess the Killer app for videovomit",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -18,8 +18,8 @@
   },
   "license": "MIT",
   "build": {
-    "appId": "DBD Killer Voting",
-    "productName": "DBD Killer Voting",
+    "appId": "Guess the Killer",
+    "productName": "Guess the Killer",
     "icon": "./src/assets/icons/win/favicon.ico",
     "win": {
       "icon": "./src/assets/icons/win/favicon.ico"
@@ -61,6 +61,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "axios": "^1.6.8",
     "configparser": "^0.3.10",
+    "ini": "^6.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tmi.js": "^1.8.5"

@@ -14,11 +14,10 @@ const MainView = (props) => {
             <button id="clear" onClick={() => props.clear()}>{props.aggro ? 'Throw Away Votes' : 'Clear Votes'}</button>
             <button id="closeVoting" onClick={() => props.toggle(props.voting)}>
                 <span>
-                    {props.voting ? (props.aggro ? 'No More' : 'Close') : (props.aggro ? 'Let People' : 'Open')}
-                </span> {props.aggro ? 'Vote' : 'Voting'}
+                    {props.voting ? 'Close' : 'Open'}
+                </span> Voting
             </button>
             <button id="listvotes" onClick={() => props.listVotes()}>List</button>
-            <button id="announce" onClick={() => props.announce()}>Announce</button>
         </>
     );
 }
