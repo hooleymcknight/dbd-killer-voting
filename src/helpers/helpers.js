@@ -38,7 +38,7 @@ const template = [
                 label: 'Reconnect',
                 type: 'normal',
                 click: async () => {
-                    mainWindow.webContents.send('changeState', ['startSetup']);
+                    browserWindow.webContents.send('changeState', ['startSetup']);
                     getOauthCode();
                 }
             }
