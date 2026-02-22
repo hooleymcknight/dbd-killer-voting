@@ -1,7 +1,7 @@
 {
   "name": "guess-the-killer",
   "productName": "Guess the Killer",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "Guess the Killer app for videovomit",
   "main": ".webpack/main",
   "scripts": {
