@@ -114,7 +114,7 @@ const VotingApp = () => {
                     <MainView
                         voting={votingState}
                         toggle={(newVotingState) => toggleVoting(newVotingState)}
-                        clear={() => ipcRenderer.send('clear')}
+                        clearVotes={() => ipcRenderer.send('clearVotes')}
                         listVotes={() => ipcRenderer.send('listvotes')}
                     />
                 }

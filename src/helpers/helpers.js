@@ -2,9 +2,12 @@ const fs = require('fs').promises;
 const Store = require('./store.js');
 const killers = require('../tools/voting/killers.json');
 
-const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt';
+const botName = 'vvvvvvvbot';
+// const killerTextFile = 'D:/Videos/videovomit/bots/killerbot/killerlist.txt';
+const killerTextFile = 'C:/Users/Holly/Documents/Coding/gtk/killers.txt';
 
-const killerBlank = [...Object.keys(killers)];
+const killerBlank = [...Object.keys(killers).sort()];
+const killerBlankObj = Object.fromEntries(killerBlank.map(x => [x, '']));
 
 const { getOauthCode, getAccessToken } = require('../helpers/reconnect.js');
 
@@ -18,25 +21,17 @@ const createTxtFile = (json) => {
     return text;
 }
 
-const sortKillersStore = async (blank) => {
-    let keys = Object.keys(blank).sort();
-    let sortedKillerBlank = {};
-    keys.forEach((key) => {
-        sortedKillerBlank[key] = '';
-    });
-
-    await fs.writeFile(killerTextFile, createTxtFile(sortedKillerBlank));
-
-    return sortedKillerBlank;
+const writeKillerFile = async (filePath, content) => {
+    await fs.writeFile(filePath, content);
 }
 
 const store = new Store({
     configName: 'user-preferences',
     defaults: {
         windowBounds: { width: 800, height: 600 },
-        killerBlank: sortKillersStore(killers),
+        killerBlank: killerBlank,
         killerNicknames: killers,
-        previousRound: sortKillersStore(killers),
+        previousRound: killerBlank,
         struckKillers: [],
         oauthCode: '',
         accessToken: '',
@@ -82,7 +77,7 @@ const template = [
                 label: 'Sort Txt File',
                 type: 'normal',
                 click: async (menuItem, browserWindow, event) => {
-                    await sortKillersStore(killers);
+                    await writeKillerFile(killerTextFile, createTxtFile(killerBlankObj));
                 }
             }
         ]

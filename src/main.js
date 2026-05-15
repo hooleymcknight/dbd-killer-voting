@@ -9,7 +9,6 @@ const { getAccessToken, getOauthCode } = require('./helpers/reconnect.js');
 const config = require('./helpers/config.json');
 
 const { template, store, killerTextFile, base64icon } = require('./helpers/helpers.js');
-const { clear } = require('console');
 
 let mainWindow;
 let client;
@@ -19,7 +18,7 @@ let refreshToken = store.get('refreshToken');
 let accessToken = store.get('accessToken');
 let username = store.get('username');
 
-const twitchChannel = '#videovomit'; // #videovomit, needs the hashtag bc that is how twitch reads shit
+const twitchChannel = '#hollyngrade'; // #videovomit, needs the hashtag bc that is how twitch reads shit
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -260,8 +259,8 @@ client.on('message', async (channel, user, message, self) => {
 // ===================================== IPC MAIN =====================================
 // =====================================
 
-ipcMain.on('clear', async () => {
-    const clearReply = await dbd.clear();
+ipcMain.on('clearVotes', async () => {
+    const clearReply = await dbd.clearVotes();
     store.set('previousRound', clearReply[1]);
     client.say(twitchChannel, clearReply[0]);
 });

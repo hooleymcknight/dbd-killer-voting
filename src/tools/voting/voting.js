@@ -78,7 +78,7 @@ const clearReplies = [
     "videovUgly the voting board has been cleared. throw votes in for next round! videovUgly"
 ];
 
-const clear = async () => {
+const clearVotes = async () => {
     const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
     let newBlankObject = {};
     killerBlank.forEach((killer) => {
@@ -148,4 +148,4 @@ const toJSON = (txt) => {
     return JSONobject;
 }
 
-module.exports = { storeVote, clear, undoClear, listVotes, myVote, help, createTxtFile, sendVotesObject };
+module.exports = { storeVote, clearVotes, undoClear, listVotes, myVote, help, createTxtFile, sendVotesObject };
