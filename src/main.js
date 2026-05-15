@@ -288,19 +288,43 @@ client.on('message', async (channel, user, message, self) => {
 // =====================================
 
 ipcMain.on('clearVotes', async () => {
-    const clearReply = await dbd.clearVotes();
-    store.set('previousRound', clearReply[1]);
-    client.say(twitchChannel, clearReply[0]);
+    try {
+        const clearReply = await dbd.clearVotes();
+        store.set('previousRound', clearReply[1]);
+        client.say(twitchChannel, clearReply[0]);
+    }
+    catch (err) {
+        console.error('clear votes failed:', err);
+        if (client && client.readyState && client.readyState() === 'OPEN') {
+            client.say(twitchChannel, 'Could not clear votes — check the app console.');
+        }
+    }
 });
 
 ipcMain.on('undoClear', async () => {
-    const undoClearReply = await dbd.undoClear(store.get('previousRound'));
-    client.say(twitchChannel, undoClearReply);
+    try {
+        const undoClearReply = await dbd.undoClear(store.get('previousRound'));
+        client.say(twitchChannel, undoClearReply);
+    }
+    catch (err) {
+        console.error('undo clear votes failed:', err);
+        if (client && client.readyState && client.readyState() === 'OPEN') {
+            client.say(twitchChannel, 'Could not undo clear votes — check the app console.');
+        }
+    }
 });
 
 ipcMain.on('listvotes', async () => {
-    const listReply = await dbd.listVotes();
-    client.say(twitchChannel, listReply);
+    try {
+        const listReply = await dbd.listVotes();
+        client.say(twitchChannel, listReply);
+    }
+    catch (err) {
+        console.error('list votes failed:', err);
+        if (client && client.readyState && client.readyState() === 'OPEN') {
+            client.say(twitchChannel, 'Could not list votes — check the app console.');
+        }
+    }
 });
 
 ipcMain.on('toggleVoting', async (event, data) => {

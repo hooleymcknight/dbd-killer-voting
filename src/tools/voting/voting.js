@@ -82,8 +82,11 @@ const clearReplies = [
 const clearVotes = async () => {
     const ktfPath = store.get('ktf');
     const killersVotes = toJSON(await fs.readFile(ktfPath, 'utf8'));
+    const currentBlank = store.get('killerBlank') || {};
+    const keys = Array.isArray(currentBlank) ? currentBlank : Object.keys(currentBlank);
+
     let newBlankObject = {};
-    for (const killer of killerBlank) {
+    for (const killer of keys) {
         newBlankObject[killer] = '';
     }
     await fs.writeFile(ktfPath, createTxtFile(newBlankObject));
