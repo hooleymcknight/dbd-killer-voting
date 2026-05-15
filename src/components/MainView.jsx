@@ -11,7 +11,7 @@ const MainView = (props) => {
     return (
         <>
             <h1>DBD Killer Voting</h1>
-            <button id="clear" onClick={() => props.clearVotes()}>{props.aggro ? 'Throw Away Votes' : 'Clear Votes'}</button>
+            <button id="clearVotes" onClick={() => props.clearVotes()}>Clear Votes</button>
             <button id="closeVoting" onClick={() => props.toggle(props.voting)}>
                 <span>
                     {props.voting ? 'Close' : 'Open'}

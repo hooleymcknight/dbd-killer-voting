@@ -1,13 +1,14 @@
 const fs = require('fs').promises;
-const { store, killerTextFile } = require('../../helpers/helpers.js');
+const { store, createTxtFile } = require('../../helpers/helpers.js');
 
 const killerNicknames = store.get('killerNicknames');
 const killerBlank = store.get('killerBlank');
 const struckKillers = store.get('struckKillers');
 
 const storeVote = async (message, user) => {
+    const ktfPath = store.get('ktf');
     let vote = message.toLowerCase().split('vote')[1].trim();
-    let killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
+    let killersVotes = toJSON(await fs.readFile(ktfPath, 'utf8'));
 
     if (Object.values(killersVotes).includes(user.username)) {
         return 'you already voted';
@@ -32,7 +33,7 @@ const storeVote = async (message, user) => {
         }
         else {
             killersVotes[`${processedVote}`] = user.username;
-            await fs.writeFile(killerTextFile, createTxtFile(killersVotes));
+            await fs.writeFile(ktfPath, createTxtFile(killersVotes));
             return `@${user.username} I've recorded your vote for ${vote}.`;
         }
     }
@@ -79,22 +80,23 @@ const clearReplies = [
 ];
 
 const clearVotes = async () => {
-    const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
+    const ktfPath = store.get('ktf');
+    const killersVotes = toJSON(await fs.readFile(ktfPath, 'utf8'));
     let newBlankObject = {};
-    killerBlank.forEach((killer) => {
+    for (const killer of killerBlank) {
         newBlankObject[killer] = '';
-    });
-    await fs.writeFile(killerTextFile, createTxtFile(newBlankObject));
+    }
+    await fs.writeFile(ktfPath, createTxtFile(newBlankObject));
     return [pickRandom(clearReplies), killersVotes];
 }
 
 const undoClear = async (previousRound) => {
-    await fs.writeFile(killerTextFile, createTxtFile(previousRound));
+    await fs.writeFile(store.get('ktf'), createTxtFile(previousRound));
     return `undo! undo!`;
 }
 
 const listVotes = async () => {
-    const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
+    const killersVotes = toJSON(await fs.readFile(store.get('ktf'), 'utf8'));
     const votes = Object.keys(killersVotes).filter(x => killersVotes[x].length && killersVotes[x] != '\r');
     // excluding \r values ensures that anything recorded as a Return in other file end types won't get the bot confused
 
@@ -107,12 +109,12 @@ const listVotes = async () => {
 }
 
 const sendVotesObject = async () => {
-    const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
+    const killersVotes = toJSON(await fs.readFile(store.get('ktf'), 'utf8'));
     return killersVotes;
 }
 
 const myVote = async (user) => {
-    const killersVotes = toJSON(await fs.readFile(killerTextFile, 'utf8'));
+    const killersVotes = toJSON(await fs.readFile(store.get('ktf'), 'utf8'));
     const vote = Object.keys(killersVotes).filter(x => killersVotes[x] === user.username);
 
     if (vote.length) {
@@ -129,22 +131,22 @@ const help = (userIsMod) => {
     return commandsList;
 }
 
-const createTxtFile = (json) => {
-    let text = '';
-    const lastIdx = Object.keys(json).length - 1;
-    Object.keys(json).forEach((killer) => {
-        text += `${killer} - ${json[killer]}`;
-        Object.keys(json).indexOf(killer) === lastIdx ? text += '' : text += '\n';
-    });
-    return text;
-}
+// const createTxtFile = (json) => {
+//     let text = '';
+//     const lastIdx = Object.keys(json).length - 1;
+//     for (const killer of Object.keys(json)) {
+//         text += `${killer} - ${json[killer]}`;
+//         Object.keys(json).indexOf(killer) === lastIdx ? text += '' : text += '\n';
+//     }
+//     return text;
+// }
 
 const toJSON = (txt) => {
     let keys = txt.split('\n');
     let JSONobject = {};
-    keys.forEach((line) => {
+    for (const line of keys) {
         JSONobject[line.split(' - ')[0]] = line.split(' - ')[1];
-    })
+    }
     return JSONobject;
 }
 

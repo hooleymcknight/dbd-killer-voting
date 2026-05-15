@@ -108,9 +108,9 @@ const EditView = (props) => {
     const unstrike = (killer) => {
         resetError();
         let newStruck = [];
-        props.data.struck.forEach((struck) => {
+        for (const struck of props.data.struck) {
             if (killer != struck) newStruck.push(struck);
-        });
+        }
         props.data.struck = newStruck;
 
         props.onUnstrike(killer);
