@@ -8,7 +8,7 @@ const { getAccessToken, getOauthCode } = require('./helpers/reconnect.js');
 
 const config = require('./helpers/config.json');
 
-const { template, store, killerTextFile, base64icon } = require('./helpers/helpers.js');
+const { store, template, base64icon, checkForFile, checkAllKTFs, fallbackKTF } = require('./helpers/helpers.js');
 
 let mainWindow;
 let client;
@@ -18,7 +18,7 @@ let refreshToken = store.get('refreshToken');
 let accessToken = store.get('accessToken');
 let username = store.get('username');
 
-const twitchChannel = '#hollyngrade'; // #videovomit, needs the hashtag bc that is how twitch reads shit
+const twitchChannel = '#videovomit'; // #videovomit, needs the hashtag bc that is how twitch reads shit
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -27,6 +27,34 @@ if (require('electron-squirrel-startup')) {
 
 const menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);
+
+let ktfPath = store.get('ktf');
+const setUpKtfPath = async () => {
+    const selectedKTF = await checkAllKTFs();
+    // we either havent set the path yet, or we already have it set to the preferred one. either way, this means try the preferred path.
+    if (ktfPath == null || ktfPath === selectedKTF) {
+        let validPath = await checkForFile(selectedKTF);
+        if (validPath.success) {
+            // hoo ray, now what? // continue with the app I guess. oh wait-- no, you need to make sure the ktf path is set in the store. cause what if you got here with path null.
+            store.set('ktf', selectedKTF);
+            ktf = selectedKTF; // redeclare ktf for this file. if that makes a difference. it might not, I might call the store everytime already.
+        }
+        else {
+            // okay, so that didn't work. we need to use the fallback path now.
+            let validFallback = await checkForFile(fallbackKTF);
+            if (validFallback.success) {
+                store.set('ktf', fallbackKTF);
+                ktf = fallbackKTF;
+            }
+            else {
+                // everything is borked anyway.
+                // app.quit(); // dont actually do this.
+                console.error('No valid path, even the fallback broke. Oof.')
+            }
+        }
+    }
+}
+setUpKtfPath();
 
 const createWindow = () => {
     let { width, height } = store.get('windowBounds');
@@ -260,19 +288,43 @@ client.on('message', async (channel, user, message, self) => {
 // =====================================
 
 ipcMain.on('clearVotes', async () => {
-    const clearReply = await dbd.clearVotes();
-    store.set('previousRound', clearReply[1]);
-    client.say(twitchChannel, clearReply[0]);
+    try {
+        const clearReply = await dbd.clearVotes();
+        store.set('previousRound', clearReply[1]);
+        client.say(twitchChannel, clearReply[0]);
+    }
+    catch (err) {
+        console.error('clear votes failed:', err);
+        if (client && client.readyState && client.readyState() === 'OPEN') {
+            client.say(twitchChannel, 'Could not clear votes — check the app console.');
+        }
+    }
 });
 
 ipcMain.on('undoClear', async () => {
-    const undoClearReply = await dbd.undoClear(store.get('previousRound'));
-    client.say(twitchChannel, undoClearReply);
+    try {
+        const undoClearReply = await dbd.undoClear(store.get('previousRound'));
+        client.say(twitchChannel, undoClearReply);
+    }
+    catch (err) {
+        console.error('undo clear votes failed:', err);
+        if (client && client.readyState && client.readyState() === 'OPEN') {
+            client.say(twitchChannel, 'Could not undo clear votes — check the app console.');
+        }
+    }
 });
 
 ipcMain.on('listvotes', async () => {
-    const listReply = await dbd.listVotes();
-    client.say(twitchChannel, listReply);
+    try {
+        const listReply = await dbd.listVotes();
+        client.say(twitchChannel, listReply);
+    }
+    catch (err) {
+        console.error('list votes failed:', err);
+        if (client && client.readyState && client.readyState() === 'OPEN') {
+            client.say(twitchChannel, 'Could not list votes — check the app console.');
+        }
+    }
 });
 
 ipcMain.on('toggleVoting', async (event, data) => {
@@ -336,9 +388,9 @@ const addNewKillerName = async (newName, originalName) => {
 
     let keys = Object.keys(killerBlank).sort();
     let sortedKillerBlank = {};
-    keys.forEach((key) => {
+    for (const key of keys) {
         sortedKillerBlank[key] = '';
-    });
+    }
     
     store.set('killerBlank', sortedKillerBlank);
     store.set('previousRound', sortedKillerBlank);
@@ -357,7 +409,7 @@ const addNewKillerName = async (newName, originalName) => {
     store.set('killerNicknames', killerNicknames);
 
     // update the display .txt file
-    await fs.writeFile(killerTextFile, dbd.createTxtFile(sortedKillerBlank));
+    await fs.writeFile(store.get('ktfPath'), dbd.createTxtFile(sortedKillerBlank));
 }
 
 ipcMain.on('addNewKiller', (event, data) => {
@@ -386,9 +438,9 @@ ipcMain.on('changeStrike', (event, data) => {
     }
     else if(!strike && struckKillers.includes(killer)) {
         let newStruck = [];
-        struckKillers.forEach((struck) => {
-        if (killer != struck) newStruck.push(struck);
-        });
+        for (const struck of struckKillers) {
+            if (killer != struck) newStruck.push(struck);
+        }
         store.set('struckKillers', newStruck);
     }
 });

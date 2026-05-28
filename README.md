@@ -1,4 +1,4 @@
-# DBD Killer Voting App
+# Guess the Killer App
 
 This app was built for a friend and fellow Twitch streamer, [@videovomit](https://twitch.tv/videovomit). When streaming Dead by Daylight, VV has giveaways on his stream for people who can correctly guess the killer in their next match. He displays the list of viewers' current votes through a text file asset displayed in his OBS.
 
