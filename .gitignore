@@ -29,7 +29,4 @@ config.json
 
 /src/tools/not-used
 
-package-lock.json
-yarn.lock
-
 /.webpack
