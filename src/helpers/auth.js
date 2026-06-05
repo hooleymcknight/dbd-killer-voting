@@ -33,5 +33,16 @@ this bc when I get a new AT, I'll get a new RT,
 but I should store an RT expiry regardless to
 save me a fetch.
 
+OKAY let's talk about security.
+user logs into twitch, passes code to app.
+App passes code to twitch, trades for tokens.
+We store tokens on the server and in the store, but bcrypt them up first.
+
 */
 
+import bcrypt from "bcryptjs";
+
+const scope = 'channel:moderate+chat:edit+chat:read';
+const redirectUri = 'https://hollymphillips.com/projects/guess-the-killer/api:3001'
+
+const connectUrl = `https://id.twitch.tv/oauth2/authorize?client_id=CLIENTID&redirect_uri=REDIRECTURI&response_type=code&scope=${scope}`
