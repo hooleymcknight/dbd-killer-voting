@@ -1,5 +1,8 @@
 let twitchChannel, username, accessToken;
 
+/** this might not be a const!! 
+ * in fact, it's probably a function. generateClient(accessToken).
+ */
 const client = new tmi.client({
     options: { debug: false },
     connection: {
@@ -16,7 +19,7 @@ const client = new tmi.client({
 
 
 /**
- * posts in the witch chat. just shortening some of the 
+ * posts in the twitch chat. just shortening some of the 
  * lines in main.js
  * @param {string} message 
  */

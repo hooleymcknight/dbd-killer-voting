@@ -1,3 +1,35 @@
+// start auth here
+const { loadTokens, saveTokens } = require('./tokens');
+
+export const start = () => {
+    const existingTokens = loadTokens();
+    if (!existingTokens) { // nothing at all-- start auth code flow
+        console.log('no tokens saved')
+    }
+}
+
+
+
+/*
+
+NORMAL FLOW STEPS (starter flow in parenthesis):
+
+0 - pull all token info from the store.
+
+1 - check for secret. (and AT, RT)
+1.5 - fetch secret if needed. (or start the auth code flow)
+
+2 - check AT expiry
+2.5 - REQUEST new AT from Twitch using RT.
+
+3 - use the AT in twitch.js to generateClient(AT) then client.connect.
+
+*/
+
+
+
+
+
 /* 
 realistically, the first thing I should do is check cache/storage
 for accesstoken.
@@ -39,8 +71,6 @@ App passes code to twitch, trades for tokens.
 We store tokens on the server and in the store, but bcrypt them up first.
 
 */
-
-import bcrypt from "bcryptjs";
 
 const scope = 'channel:moderate+chat:edit+chat:read';
 const redirectUri = 'https://hollymphillips.com/projects/guess-the-killer/api:3001'
