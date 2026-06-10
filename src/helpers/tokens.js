@@ -23,8 +23,7 @@ const { store } = require('./helpers');
 export const saveTokens = (tokens) => {
     if (!safeStorage.isEncryptionAvailable()) throw new Error('no OS secret store');
     const blob = safeStorage.encryptString(JSON.stringify(tokens));
-    // store.set('tokens', blob.toString('latin1')); // store ciphertext, not plaintext
-    console.log('tokens:', blob.toString('latin1'))
+    store.set('tokens', blob.toString('latin1')); // store ciphertext, not plaintext
 }
 
 export const loadTokens = () => {
