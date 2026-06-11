@@ -5,8 +5,6 @@ const { loadTokens, saveTokens } = require('./tokens');
  *  tokens: { 
         access:       { value: 'at-code', expiry: '12345' }, // we are given expiry in the response
         refresh:      { value: 'rt-code', expiry: '123456123' }, // we will create expiry. set to 30 days.
-        authCode:     { value: 'oauth-code' }, // one-time use!
-        clientSecret: { value: 'secret-code-from-hg-server' },
     }
  */
 
@@ -21,12 +19,6 @@ export const start = () => {
     // STEP 0 ----------------
     const existingTokens = loadTokens();
     
-    // STEP 1 -----------------
-    const clientSecret = existingTokens.clientSecret || await fetchSecret();
-
-    // STEP 2 ------------------
-    const accessToken = await getAccessToken(existingTokens.access, existingTokens.refresh);
-
     //
 }
 
@@ -53,6 +45,16 @@ NORMAL FLOW STEPS (starter flow in parenthesis):
 2.5 - REQUEST new AT from Twitch using RT.
 
 3 - use the AT in twitch.js to generateClient(AT) then client.connect.
+
+
+
+// STEP 1 -----------------
+    const clientSecret = existingTokens.clientSecret || await fetchSecret();
+
+    // STEP 2 ------------------
+    const accessToken = await getAccessToken(existingTokens.access, existingTokens.refresh);
+
+    //
 
 */
 
