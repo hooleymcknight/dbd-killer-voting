@@ -1,14 +1,44 @@
 // start auth here
 const { loadTokens, saveTokens } = require('./tokens');
+/**
+ * shape of tokens:
+ *  tokens: { 
+        access:       { value: 'at-code', expiry: '12345' }, // we are given expiry in the response
+        refresh:      { value: 'rt-code', expiry: '123456123' }, // we will create expiry. set to 30 days.
+        authCode:     { value: 'oauth-code' }, // one-time use!
+        clientSecret: { value: 'secret-code-from-hg-server' },
+    }
+ */
+
+    /***
+     * scrap all this, ugh. client is not allowed to go through the app even with safestorage.
+     * access and refresh through app. maybe auth code but idk. it's one time use actually so no.
+     * secret must live on the server. the server will communicate with twitch on the app's behalf.
+     */
 
 export const start = () => {
+    
+    // STEP 0 ----------------
     const existingTokens = loadTokens();
-    if (!existingTokens) { // nothing at all-- start auth code flow
-        console.log('no tokens saved')
-    }
+    
+    // STEP 1 -----------------
+    const clientSecret = existingTokens.clientSecret || await fetchSecret();
+
+    // STEP 2 ------------------
+    const accessToken = await getAccessToken(existingTokens.access, existingTokens.refresh);
+
+    //
 }
 
+const getAccessToken = async (access = null, refresh = null) => {
+    if (access?.value && !isExpired(access.expiry)) return access.value;
+    if (refresh?.value && !isExpired(refresh.expiry)) return await refreshAccessToken(refresh.value);
+    return await startAuthCodeFlow();
+}; // functions I need to write: refreshAccessToken && startAuthCodeFlow && fetchSecret
 
+const fetchSecret = async () => {
+    fetch('https://hollyngrade.com/')
+}
 
 /*
 
@@ -17,7 +47,7 @@ NORMAL FLOW STEPS (starter flow in parenthesis):
 0 - pull all token info from the store.
 
 1 - check for secret. (and AT, RT)
-1.5 - fetch secret if needed. (or start the auth code flow)
+1.5 - fetch secret if needed. (or start the auth code flow) --> does the auth code flow lead back in to fetch secret? these could be independent of each other actually...
 
 2 - check AT expiry
 2.5 - REQUEST new AT from Twitch using RT.
@@ -27,6 +57,29 @@ NORMAL FLOW STEPS (starter flow in parenthesis):
 */
 
 
+/**
+ * we've pulled the tokens object info from the store, and we want to check 
+ * some token's expiry. this function will work on whatever. we're just
+ * lookin at dates for this.
+ * @param {Date} expireDT 
+ */
+const isExpired = (expireDT) => {
+    if (!expireDT) return false;
+    return (new Date() > expireDT);
+}
+// well, this function was much fucking shorter than I expected it to be.
+
+// when you SET expiry, it needs to get set as...
+/*
+    given: 14127 --> seconds until AT expires.
+    grab this datetime.
+    let expiresAt = new Date();
+    expiresAt = expiresAt.setMilliseconds(expiresAt.getMilliseconds())
+    let expireDT = new Date(expiresAt + (givenExpirySec * 1000))
+
+    we should do this last line in the checkExpiry function, of course.
+    if (new Date() < expireDT) not expired! you can use this.
+*/
 
 
 
